@@ -1,0 +1,92 @@
+
+FUNKCJONALNOŚCI GŁÓWNE
+
+1. Logowanie i rejestracja [WYSOKI PRIORYTET]
+   - Logowanie przez Google OAuth
+   - Wersja demo z loginem gościa (readonly)
+
+2. Zarządzanie wydatkami [WYSOKI PRIORYTET]
+   - Dodawanie pojedynczych i wielu rekordów
+   - Kategorie (jedzenie, rachunki, transport, rozrywka itd.)
+   - Podkategorie lub tagi
+   - Edytowanie i usuwanie rekordów
+   - Opcjonalnie: załączniki (np. zdjęcia paragonów)
+
+3. Import danych [ŚREDNI PRIORYTET]
+   - Obsługa CSV i/lub Excel
+   - Inteligentne mapowanie kolumn: jeżeli użytkownik przypisał wcześniej kategorię do opisu lub źródła, system zapamięta to i automatycznie przypisze kategorię przy kolejnym imporcie
+   - Automatyczne rozpoznawanie kategorii (np. na podstawie opisu)
+   - Obsługa błędów i interaktywne poprawki: jeśli pojedyncze rekordy zawierają błędy – zostaną one wskazane użytkownikowi; jeśli cały plik jest nieczytelny, pojawi się ogólny komunikat
+
+4. Wizualizacje i statystyki [ŚREDNI PRIORYTET]
+   - Wydatki miesięczne, roczne, dzienne
+   - Porównanie użytkowników
+   - Kategorie: wykresy kołowe, słupkowe
+   - Trendy czasowe (np. wykres liniowy)
+   - Top 5 kategorii wydatków
+   - Procentowy udział kategorii
+
+5. Użytkownicy i gospodarstwa domowe (tzw. "Pokoje") [WYSOKI PRIORYTET]
+   - Tworzenie kont gospodarstw domowych (Pokoje)
+   - Możliwość zapraszania innych użytkowników do pokoju
+   - Wydatki przypisane do konkretnego użytkownika
+   - Możliwość dzielenia wydatków z innymi
+   - System self-host z opcją rozszerzenia o otwarte API
+
+6. Budżetowanie i przypomnienia [NISKI PRIORYTET]
+   - Funkcjonalność opcjonalna, z naciskiem na powiadamianie o nietypowych wydatkach lub znaczącym wzroście kosztów
+   - Możliwość wysyłania ostrzeżeń push/mail jeśli użytkownik regularnie korzysta z aplikacji mobilnej
+   - Nie jest to system do budżetowania – bardziej notowanie i analiza wydatków
+
+FUNKCJONALNOŚCI TECHNICZNE (propozycje)
+
+1. Backend
+   - REST API lub GraphQL
+   - Autoryzacja (JWT / OAuth)
+   - Parsowanie plików (CSV, XLSX)
+   - System kategorii i tagów
+   - Obsługa relacji w danych
+
+2. Frontend
+   - Dynamiczne formularze
+   - Interaktywne wykresy (Chart.js, D3, Recharts)
+   - Responsywny interfejs (np. Tailwind, MUI)
+   - Tryb demo z seedowanymi danymi
+
+3. Baza danych
+   - Normalizacja danych (Users, Households, Expenses, Categories)
+   - Relacje: wielu użytkowników w jednym gospodarstwie
+   - Soft delete i historia zmian
+
+4. Testy
+   - Testy backendu (Jest / Pytest)
+   - Testy frontendowe (Cypress / Playwright)
+   - Testy importu danych
+
+FUNKCJE OPCJONALNE (NA PÓŹNIEJ)
+
+1. Skanowanie paragonów
+   - OCR (np. Tesseract)
+   - Automatyczne uzupełnianie pól z obrazu
+
+2. Notyfikacje
+   - Mailowe lub push
+   - Przypomnienia o dodaniu wydatków
+   - Powiadomienia o nietypowych lub wysokich wydatkach
+
+3. Publiczne API
+   - Możliwość integracji z innymi aplikacjami
+
+4. Eksport danych
+   - Pobieranie CSV, Excel, PDF
+   - Raport miesięczny do pobrania
+
+5. Tryb offline / PWA
+   - Obsługa offline
+   - Synchronizacja danych po powrocie internetu
+
+BEZPIECZEŃSTWO I PRYWATNOŚĆ
+
+- Szyfrowanie danych
+- Role użytkowników (właściciel, członek)
+- Ograniczenia w wersji demo
