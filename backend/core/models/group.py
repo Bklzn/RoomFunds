@@ -4,10 +4,10 @@ from django.contrib.auth.models import User
 class Group(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-    members = models.ManyToManyField(User, related_name="expense_groups")
+    members = models.ManyToManyField(User, related_name="expense_groups", blank=True)
     owner = models.ForeignKey(User, on_delete=models.PROTECT, related_name='owned_groups')
-    moderators = models.ManyToManyField(User, related_name="moderated_groups")
-
+    moderators = models.ManyToManyField(User, related_name="moderated_groups", blank=True)
+        
     def __str__(self):
         return f"{self.name}"
     
@@ -46,6 +46,7 @@ class GroupMembership(models.Model):
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='memberships')
     joined_at = models.DateTimeField(auto_now_add=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default=ROLE_MEMBER)
+    alias = models.CharField(max_length=255, blank=True)
 
     class Meta:
         unique_together = ('user', 'group')

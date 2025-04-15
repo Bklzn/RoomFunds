@@ -14,10 +14,13 @@ class GroupsView(GenericAPIView):
     def get(self, request):
         expenses = self.get_queryset().filter(members=request.user)
         serializer = self.get_serializer(expenses, many=True)
-        return Response(serializer.data)
+        filtered_data = [
+            {k: v for k, v in item.items() if k in ['name', 'owner']}
+            for item in serializer.data
+        ]
+        return Response(filtered_data)
     
     def post(self, request):
-        print(request.data)
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -31,13 +34,13 @@ class GroupView(GenericAPIView):
     serializer_class = GroupSerializer
     queryset = Group.objects.all()
     
-    def get(self, request, pk):
-        expense = self.get_queryset().filter(user=request.user).get(pk=pk)
+    def get(self, request, name):
+        expense = self.get_queryset().filter(members=request.user).get(name=name)
         serializer = self.get_serializer(expense)
         return Response(serializer.data)
     
-    def put(self, request, pk):
-        expense = self.get_queryset().filter(user=request.user).get(pk=pk)
+    def put(self, request, name):
+        expense = self.get_queryset().filter(user=request.user).get(name=name)
         serializer = self.get_serializer(expense, data=request.data)
         if serializer.is_valid():
             serializer.save()
