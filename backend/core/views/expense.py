@@ -5,7 +5,7 @@ from core.serializers import ExpenseSerializer
 from user_auth.views import CookieJWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .models import Expense
+from core.models import Expense
 
 def login_view(request):
     redirect_uri = settings.LOGIN_REDIRECT_URL
