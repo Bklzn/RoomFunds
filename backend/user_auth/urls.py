@@ -7,6 +7,6 @@ urlpatterns = [
     path('token', TokenObtainPairView.as_view(), name='tokens'),
     path('token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/callback/', views.oauth_redirect, name='callback'),
-    path('logout/', views.logout, name='logout'),
+    path('logout/', views.logout_view, name='logout'),
     path('whoami/', views.WhoAmIView.as_view(), name='whoami'),
 ]
