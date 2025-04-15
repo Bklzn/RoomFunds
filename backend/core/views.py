@@ -1,39 +1,56 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.conf import settings
-from django.contrib.auth import logout
-from django.contrib.auth.models import User
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from rest_framework.generics import GenericAPIView
+from core.serializers import ExpenseSerializer
+from user_auth.views import CookieJWTAuthentication
 from rest_framework.permissions import IsAuthenticated
-
-from user_auth.serializers import UserSerializer
-
-class CookieJWTAuthentication(JWTAuthentication):
-    def authenticate(self, request):
-        raw_token = request.COOKIES.get('access_token')
-        if raw_token is None:
-            return None
-
-        validated_token = self.get_validated_token(raw_token)
-        return self.get_user(validated_token), validated_token
-
-class WhoAmIView(APIView):
-    authentication_classes = [CookieJWTAuthentication]
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        serializer = UserSerializer(request.user)
-        return Response({"user": serializer.data})
-
+from rest_framework.response import Response
+from .models import Expense
 
 def login_view(request):
     redirect_uri = settings.LOGIN_REDIRECT_URL
     return render(request, 'login.html', {'redirect_uri': redirect_uri})
 
-def logout_view(request):
-    logout(request)
-    response = redirect('/')
-    response.delete_cookie('access_token')
-    response.delete_cookie('refresh_token')
-    return response
+class ExpensesView(GenericAPIView):
+    authentication_classes = [CookieJWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = ExpenseSerializer
+    queryset = Expense.objects.all()
+    
+    def get(self, request):
+        expenses = self.get_queryset().filter(user=request.user)
+        serializer = self.get_serializer(expenses, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        else:
+            return Response(serializer.errors, status=400)
+        
+class ExpenseView(GenericAPIView):
+    authentication_classes = [CookieJWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = ExpenseSerializer
+    queryset = Expense.objects.all()
+    
+    def get(self, request, pk):
+        expense = self.get_queryset().filter(user=request.user).get(pk=pk)
+        serializer = self.get_serializer(expense)
+        return Response(serializer.data)
+    
+    def put(self, request, pk):
+        expense = self.get_queryset().filter(user=request.user).get(pk=pk)
+        serializer = self.get_serializer(expense, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=400)
+        
+    def delete(self, request, pk):
+        expense = self.get_queryset().filter(user=request.user).get(pk=pk)
+        expense.delete()
+        return Response(status=204)

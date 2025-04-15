@@ -22,5 +22,6 @@ urlpatterns = [
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path("", include('social_django.urls', namespace="social")),
     path("", include("core.urls")),
-    path("auth/", include('user_auth.urls')),
+    path("", include('user_auth.urls')),
+    path("", include("core.urls")),
 ]

@@ -6,5 +6,7 @@ from . import views
 urlpatterns = [
     path('token', TokenObtainPairView.as_view(), name='tokens'),
     path('token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
-    path('callback/', views.oauth_redirect, name='callback'),
+    path('auth/callback/', views.oauth_redirect, name='callback'),
+    path('logout/', views.logout, name='logout'),
+    path('whoami/', views.WhoAmIView.as_view(), name='whoami'),
 ]
