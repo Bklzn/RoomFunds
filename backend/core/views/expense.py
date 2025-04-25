@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.http import Http404
+from django.shortcuts import get_object_or_404, render
 from django.conf import settings
 from rest_framework.generics import GenericAPIView
 from core.serializers import ExpenseSerializer
@@ -36,8 +37,17 @@ class ExpenseView(GenericAPIView):
     serializer_class = ExpenseSerializer
     queryset = Expense.objects.all()
     
+    def get_object(self, pk):
+        expense = get_object_or_404(Expense, pk=pk)
+
+        user = self.request.user
+        if expense.user == user or user in expense.group.members.all():
+            return expense
+        else:
+            raise Http404    
+
     def get(self, request, pk):
-        expense = self.get_queryset().filter(user=request.user).get(pk=pk)
+        expense = self.get_object(pk)
         serializer = self.get_serializer(expense)
         return Response(serializer.data)
     

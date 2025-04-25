@@ -17,6 +17,10 @@ class ExpenseSerializer(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         user = self.context['request'].user
         self.fields['group'].queryset = Group.objects.filter(members=user)
+    
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)
         
     def get_user(self, obj):
         return UserSerializer(obj.user).data['display']
