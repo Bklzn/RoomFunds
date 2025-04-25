@@ -4,13 +4,23 @@ from user_auth.serializers import UserSerializer
 from .models import Expense, Group
 
 class ExpenseSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    user = serializers.SerializerMethodField()
     amount = serializers.DecimalField(max_digits=10, decimal_places=2, min_value=0.01)
+    group = serializers.SlugRelatedField(slug_field='name', queryset=Group.objects.none())
     
     class Meta:
         model = Expense
-        fields = ['id', 'user', 'amount', 'category', 'description', 'date']
-        read_only_fields = ['id']
+        fields = ['user', 'group', 'amount', 'category', 'description', 'date']
+        read_only_fields = ['id','user']
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        user = self.context['request'].user
+        self.fields['group'].queryset = Group.objects.filter(members=user)
+        
+    def get_user(self, obj):
+        return UserSerializer(obj.user).data['display']
+    
         
 class GroupSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
@@ -43,13 +53,12 @@ class GroupSerializer(serializers.ModelSerializer):
         return group
     
     def get_owner(self, obj):
-        serializer = UserSerializer(instance=obj.owner)
-        return f'{serializer.data["username"]} ({serializer.data["first_name"]} {serializer.data["last_name"]})'
+        return UserSerializer(instance=obj.owner).data['display']
 
     def get_moderators(self, obj):
-        serializers = UserSerializer(instance=obj.moderators.all(), many=True)
-        return [f'{user.data["username"]} ({user.data["first_name"]} {user.data["last_name"]})' for user in serializers.data]
+        serializers = UserSerializer(instance=obj.moderators.all(), many=True).data
+        return [user['display'] for user in serializers.data]
         
     def get_members(self, obj):
-        serializers = UserSerializer(instance=obj.members.all(), many=True)
-        return [f'{user['username']} ({user['first_name']} {user['last_name']})' for user in serializers.data]
+        serializers = UserSerializer(instance=obj.members.all(), many=True).data
+        return [user['display'] for user in serializers.data]

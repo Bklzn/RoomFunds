@@ -12,13 +12,17 @@ class UserSocialAuthSerializer(serializers.ModelSerializer):
         
 class UserSerializer(serializers.ModelSerializer):
     avatar = serializers.SerializerMethodField()
+    display = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'avatar']
+        fields = ['username', 'email', 'first_name', 'last_name', 'avatar', 'display']
 
     def get_avatar(self, user):
         social = user.social_auth.filter(provider='google-oauth2').first()
         if social:
             return social.extra_data.get('picture')
         return None
+    
+    def get_display(self, obj):
+        return f'{obj.username} ({obj.first_name} {obj.last_name})'
