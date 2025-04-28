@@ -1,9 +1,11 @@
+from django.http import Http404
 from rest_framework.generics import GenericAPIView
 from core.serializers import GroupSerializer
 from user_auth.views import CookieJWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from core.models import Group
+from django.shortcuts import get_object_or_404
 
 class GroupsView(GenericAPIView):
     authentication_classes = [CookieJWTAuthentication]
@@ -34,14 +36,27 @@ class GroupView(GenericAPIView):
     serializer_class = GroupSerializer
     queryset = Group.objects.all()
     
+    def get_object(self, name):
+        group = get_object_or_404(Group, name=name)
+
+        user = self.request.user
+        if user in group.members.all():
+            return group
+        else:
+            raise Http404    
+
+    
     def get(self, request, name):
-        expense = self.get_queryset().filter(members=request.user).get(name=name)
-        serializer = self.get_serializer(expense)
+        group = self.get_object(name=name)
+        serializer = self.get_serializer(group)
         return Response(serializer.data)
     
     def put(self, request, name):
-        expense = self.get_queryset().filter(user=request.user).get(name=name)
-        serializer = self.get_serializer(expense, data=request.data)
+        group = self.get_queryset().filter(members=request.user).get(name=name)
+        if group.owner != request.user and not group.moderators.filter(id=request.user.id).exists():
+            return Response({'error': 'You do not have permission to do this.'}, status=403)
+        
+        serializer = self.get_serializer(group, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -49,6 +64,9 @@ class GroupView(GenericAPIView):
             return Response(serializer.errors, status=400)
         
     def delete(self, request, pk):
-        expense = self.get_queryset().filter(user=request.user).get(pk=pk)
-        expense.delete()
+        group = self.get_queryset().filter(members=request.user).get(pk=pk)
+        if group.owner != request.user:
+            return Response({'error': 'You do not have permission to do this.'}, status=403)
+        
+        group.delete()
         return Response(status=204)

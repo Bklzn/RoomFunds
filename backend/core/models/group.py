@@ -5,31 +5,30 @@ class Group(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     members = models.ManyToManyField(User, related_name="expense_groups", blank=True)
-    owner = models.ForeignKey(User, on_delete=models.PROTECT, related_name='owned_groups')
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='owned_groups')
     moderators = models.ManyToManyField(User, related_name="moderated_groups", blank=True)
         
     def __str__(self):
         return f"{self.name}"
     
     def get_owner(self):
-        return self.memberships.filter(role=self.ROLE_OWNER).first().user
+        return self.memberships.filter(role=GroupMembership.ROLE_OWNER).first()
     
     def get_moderators(self):
-        return self.memberships.filter(role=self.ROLE_MODERATOR)
+        return self.memberships.filter(role=GroupMembership.ROLE_MODERATOR)
     
     def get_members(self):
         return self.memberships.all()
     
     def transfer_ownership(self):
-        members = self.memberships.exclude(role=self.ROLE_OWNER).order_by('joined_at')
-        
+        members = self.memberships.exclude(role=GroupMembership.ROLE_OWNER).order_by('joined_at')
         for m in members:
-            if m.role == self.ROLE_MODERATOR:
-                m.role = self.ROLE_OWNER
+            if m.role == GroupMembership.ROLE_MODERATOR:
+                m.role = GroupMembership.ROLE_OWNER
                 m.save()
                 return
         if members.count() > 0:
-            members[0].role = self.ROLE_OWNER
+            members[0].role = GroupMembership.ROLE_OWNER
             members[0].save()
             return
     
