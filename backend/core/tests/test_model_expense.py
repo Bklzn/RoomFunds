@@ -1,11 +1,11 @@
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIRequestFactory
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from datetime import timedelta
 from decimal import Decimal
-from core.models.expense import Expense
-from core.models.group import Group
+from core.serializers import ExpenseSerializer
+from core.models import Expense, Group, Category
 
 class ExpenseModelTest(APITestCase):
     def setUp(self):
@@ -18,27 +18,26 @@ class ExpenseModelTest(APITestCase):
             description='Test Description',
             owner=self.user
         )
+        self.group.members.add(self.user)
+        self.category = Category.objects.create(name='Test Category', group=self.group)
         self.valid_expense_data = {
             'user': self.user,
             'group': self.group,
             'amount': Decimal('100.50'),
-            'category': 'Food',
+            'category_obj': self.category,
             'description': 'Lunch',
             'date': timezone.now().date()
         }
+        self.factory = APIRequestFactory()
 
     def test_create_expense(self):
         expense = Expense.objects.create(**self.valid_expense_data)
         self.assertEqual(expense.amount, Decimal('100.50'))
-        self.assertEqual(expense.category, 'Food')
+        self.assertEqual(expense.category_obj, self.category)
         self.assertEqual(expense.description, 'Lunch')
         self.assertEqual(expense.user, self.user)
-        self.assertEqual(expense.group, self.group)
-
-    def test_expense_string_representation(self):
-        expense = Expense.objects.create(**self.valid_expense_data)
-        expected_string = f"{expense.amount} - {expense.category}"
-        self.assertEqual(str(expense), expected_string)
+        self.assertEqual(expense.group, self.group) 
+        self.assertEqual(str(expense), f'{expense.description} - {expense.amount}')
 
     def test_future_date_validation(self):
         future_date = timezone.now().date() + timedelta(days=1)
@@ -55,12 +54,6 @@ class ExpenseModelTest(APITestCase):
         expense = Expense.objects.create(**expense_data)
         self.assertIsNone(expense.user)
 
-    def test_blank_category_allowed(self):
-        expense_data = self.valid_expense_data.copy()
-        expense_data['category'] = ''
-        expense = Expense.objects.create(**expense_data)
-        self.assertEqual(expense.category, '')
-
     def test_blank_description_allowed(self):
         expense_data = self.valid_expense_data.copy()
         expense_data['description'] = ''
@@ -72,3 +65,11 @@ class ExpenseModelTest(APITestCase):
         expense_data['amount'] = Decimal('99999999.99')
         expense = Expense.objects.create(**expense_data)
         self.assertEqual(expense.amount, Decimal('99999999.99'))
+        
+    def test_blank_category_allowed(self):
+        expense_data = self.valid_expense_data.copy()
+        expense_data['category_obj'] = None
+        expense_data['category_text'] = ''
+        expense = Expense.objects.create(**expense_data)
+        self.assertEqual(expense.category_text, '')
+        self.assertEqual(expense.category_obj, None)

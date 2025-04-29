@@ -32,7 +32,7 @@ class TestExpenseViews(APITestCase):
             user=self.user,
             group=self.group,
             amount=Decimal('50.00'),
-            category='Food',
+            category_text='Food',
             description='Test expense',
             date=timezone.now().date()
         )
@@ -40,7 +40,7 @@ class TestExpenseViews(APITestCase):
             user=self.other_user,
             group=self.other_group,
             amount=Decimal('30.00'),
-            category='Transport',
+            category_text='Transport',
             description='Other expense',
             date=timezone.now().date()
         )
@@ -57,7 +57,7 @@ class TestExpenseViews(APITestCase):
         invalid_data = {
             'group': 'Test Group',
             'amount': '-50.00',
-            'category': 'Food',
+            'category_obj': 'Food',
             'description': 'Invalid expense',
             'date': str(date.today())
         }
@@ -81,7 +81,7 @@ class TestExpenseViews(APITestCase):
         response = self.client.put(f'/api/expense/{self.expense.id}', updated_data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['amount'], '75.00')
-        self.assertEqual(response.data['category'], 'Updated Food')
+        self.assertEqual(response.data['category_display'], 'Updated Food')
 
     def test_expense_delete_success(self):
         self.client.force_authenticate(user=self.user)

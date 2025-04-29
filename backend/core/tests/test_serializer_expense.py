@@ -2,7 +2,7 @@ from decimal import Decimal
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIRequestFactory, APITestCase
 from django.contrib.auth.models import User
-from core.models import Group, Expense
+from core.models import Group, Category
 from core.serializers import ExpenseSerializer, UserSerializer
 
 class TestExpenseSerializer(APITestCase):
@@ -18,13 +18,14 @@ class TestExpenseSerializer(APITestCase):
             owner=self.user
         )
         self.group.members.add(self.user)
+        self.category = Category.objects.create(name='Test Category', group=self.group)
         self.factory = APIRequestFactory()
         self.request = self.factory.get('/')
         self.request.user = self.user
         self.valid_data = {
             'group': 'Test Group',
             'amount': '50.00',
-            'category': 'Food',
+            'category': 'Test Category',
             'description': 'Dinner',
             'date': '2023-01-01'
         }
@@ -70,3 +71,20 @@ class TestExpenseSerializer(APITestCase):
         serializer = ExpenseSerializer(expense, context={'request': self.request})
         self.assertNotIn('id', serializer.data)
         self.assertTrue(serializer.fields['user'].read_only)
+        
+    def test_expense_serializer_category_correctly_defined(self):
+        serializer = ExpenseSerializer(data=self.valid_data, context={'request': self.request})
+        serializer.is_valid()
+        expense = serializer.save()
+        self.assertEqual(expense.category_obj, self.category)
+        
+    def test_expense_serializer_category_outside_the_group(self):
+        data = {
+            **self.valid_data,
+            'category': 'Category not in the Group',
+        }
+        serializer = ExpenseSerializer(data=data, context={'request': self.request})
+        serializer.is_valid()
+        expense = serializer.save()
+        self.assertEqual(expense.category_text, data['category'])
+        
