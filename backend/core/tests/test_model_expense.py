@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 from datetime import timedelta
 from decimal import Decimal
-from core.serializers import ExpenseSerializer
 from core.models import Expense, Group, Category
 
 class ExpenseModelTest(APITestCase):

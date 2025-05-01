@@ -3,7 +3,8 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APIRequestFactory, APITestCase
 from django.contrib.auth.models import User
 from core.models import Group, Category
-from core.serializers import ExpenseSerializer, UserSerializer
+from core.serializers import ExpenseSerializer
+from user_auth.serializers import UserSerializer
 
 class TestExpenseSerializer(APITestCase):
     def setUp(self):
