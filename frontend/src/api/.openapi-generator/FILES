@@ -1,0 +1,16 @@
+.gitignore
+.npmignore
+.openapi-generator-ignore
+api.ts
+base.ts
+common.ts
+configuration.ts
+docs/ApiApi.md
+docs/Category.md
+docs/Group.md
+docs/TokenApi.md
+docs/TokenObtainPair.md
+docs/TokenRefresh.md
+docs/WhoamiApi.md
+git_push.sh
+index.ts
