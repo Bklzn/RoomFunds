@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "core",
     "user_auth",
     'drf_spectacular',
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -62,6 +63,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "RoomFunds.urls"
@@ -181,5 +183,17 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': False,
 }
 
+SPECTACULAR_SETTINGS = {
+    'PREPROCESSING_HOOKS': ["RoomFunds.spectacular.filter_paths"],
+}
+
 LOGIN_REDIRECT_URL = '/auth/callback'
 SOCIAL_AUTH_LOGIN_ERROR_URL = '/error'
+
+CORS_ALLOW_ALL_ORIGINS = True  
+# OR
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:5173",
+# ]
+
+CORS_ALLOW_CREDENTIALS = True
