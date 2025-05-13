@@ -18,6 +18,10 @@ import type {
   UseQueryResult
 } from '@tanstack/react-query';
 
+import type {
+  User
+} from '.././model';
+
 import { customInstance } from '.././client';
 import type { ErrorType } from '.././client';
 
@@ -32,7 +36,7 @@ export const whoamiRetrieve = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<User>(
       {url: `/whoami/`, method: 'GET', signal
     },
       options);

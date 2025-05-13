@@ -27,7 +27,7 @@ class WhoAmIViewTest(APITestCase):
         response = self.client.get(url)
         
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['user']['username'], self.user.username)
+        self.assertEqual(response.data['username'], self.user.username)
         
 class UserSocialAuthTest(APITestCase):
     def setUp(self):

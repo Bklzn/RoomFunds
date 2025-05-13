@@ -5,6 +5,8 @@
  */
 
 export * from './category';
+export * from './expense';
 export * from './group';
 export * from './tokenObtainPair';
 export * from './tokenRefresh';
+export * from './user';

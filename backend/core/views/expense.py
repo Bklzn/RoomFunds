@@ -7,11 +7,13 @@ from user_auth.views import CookieJWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from core.models import Expense
+from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 def login_view(request):
     redirect_uri = settings.LOGIN_REDIRECT_URL
     return render(request, 'login.html', {'redirect_uri': redirect_uri})
 
+@extend_schema(responses=ExpenseSerializer(many=True))
 class ExpensesView(GenericAPIView):
     authentication_classes = [CookieJWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -30,7 +32,8 @@ class ExpensesView(GenericAPIView):
             return Response(serializer.data, status=201)
         else:
             return Response(serializer.errors, status=400)
-        
+    
+@extend_schema(responses=ExpenseSerializer)    
 class ExpenseView(GenericAPIView):
     authentication_classes = [CookieJWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -60,6 +63,7 @@ class ExpenseView(GenericAPIView):
         else:
             return Response(serializer.errors, status=400)
         
+    @extend_schema(responses={204: OpenApiResponse(description="Successfully deleted")})
     def delete(self, request, pk):
         expense = self.get_queryset().filter(user=request.user).get(pk=pk)
         expense.delete()

@@ -24,6 +24,7 @@ import type {
 
 import type {
   Category,
+  Expense,
   Group
 } from '.././model';
 
@@ -68,7 +69,7 @@ export const apiExpenseRetrieve = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<Expense>(
       {url: `/api/expense/${id}`, method: 'GET', signal
     },
       options);
@@ -148,7 +149,7 @@ export const apiExpenseUpdate = (
  options?: SecondParameter<typeof customInstance>,) => {
       
       
-      return customInstance<void>(
+      return customInstance<Expense>(
       {url: `/api/expense/${id}`, method: 'PUT'
     },
       options);
@@ -253,77 +254,77 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
       return useMutation(mutationOptions , queryClient);
     }
-    export const apiExpensesRetrieve = (
+    export const apiExpensesList = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<Expense[]>(
       {url: `/api/expenses`, method: 'GET', signal
     },
       options);
     }
   
 
-export const getApiExpensesRetrieveQueryKey = () => {
+export const getApiExpensesListQueryKey = () => {
     return [`/api/expenses`] as const;
     }
 
     
-export const getApiExpensesRetrieveQueryOptions = <TData = Awaited<ReturnType<typeof apiExpensesRetrieve>>, TError = ErrorType<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesRetrieve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getApiExpensesListQueryOptions = <TData = Awaited<ReturnType<typeof apiExpensesList>>, TError = ErrorType<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getApiExpensesRetrieveQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getApiExpensesListQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiExpensesRetrieve>>> = ({ signal }) => apiExpensesRetrieve(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiExpensesList>>> = ({ signal }) => apiExpensesList(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiExpensesRetrieve>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiExpensesList>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type ApiExpensesRetrieveQueryResult = NonNullable<Awaited<ReturnType<typeof apiExpensesRetrieve>>>
-export type ApiExpensesRetrieveQueryError = ErrorType<unknown>
+export type ApiExpensesListQueryResult = NonNullable<Awaited<ReturnType<typeof apiExpensesList>>>
+export type ApiExpensesListQueryError = ErrorType<unknown>
 
 
-export function useApiExpensesRetrieve<TData = Awaited<ReturnType<typeof apiExpensesRetrieve>>, TError = ErrorType<unknown>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesRetrieve>>, TError, TData>> & Pick<
+export function useApiExpensesList<TData = Awaited<ReturnType<typeof apiExpensesList>>, TError = ErrorType<unknown>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesList>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof apiExpensesRetrieve>>,
+          Awaited<ReturnType<typeof apiExpensesList>>,
           TError,
-          Awaited<ReturnType<typeof apiExpensesRetrieve>>
+          Awaited<ReturnType<typeof apiExpensesList>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useApiExpensesRetrieve<TData = Awaited<ReturnType<typeof apiExpensesRetrieve>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesRetrieve>>, TError, TData>> & Pick<
+export function useApiExpensesList<TData = Awaited<ReturnType<typeof apiExpensesList>>, TError = ErrorType<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesList>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof apiExpensesRetrieve>>,
+          Awaited<ReturnType<typeof apiExpensesList>>,
           TError,
-          Awaited<ReturnType<typeof apiExpensesRetrieve>>
+          Awaited<ReturnType<typeof apiExpensesList>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useApiExpensesRetrieve<TData = Awaited<ReturnType<typeof apiExpensesRetrieve>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesRetrieve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useApiExpensesList<TData = Awaited<ReturnType<typeof apiExpensesList>>, TError = ErrorType<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useApiExpensesRetrieve<TData = Awaited<ReturnType<typeof apiExpensesRetrieve>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesRetrieve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useApiExpensesList<TData = Awaited<ReturnType<typeof apiExpensesList>>, TError = ErrorType<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getApiExpensesRetrieveQueryOptions(options)
+  const queryOptions = getApiExpensesListQueryOptions(options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -340,7 +341,7 @@ export const apiExpensesCreate = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<Expense[]>(
       {url: `/api/expenses`, method: 'POST', signal
     },
       options);
@@ -390,77 +391,77 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
       return useMutation(mutationOptions , queryClient);
     }
-    export const apiGroupCategoriesRetrieve = (
+    export const apiGroupCategoriesList = (
     groupName: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<Category>(
+      return customInstance<Category[]>(
       {url: `/api/group/${groupName}/categories`, method: 'GET', signal
     },
       options);
     }
   
 
-export const getApiGroupCategoriesRetrieveQueryKey = (groupName: string,) => {
+export const getApiGroupCategoriesListQueryKey = (groupName: string,) => {
     return [`/api/group/${groupName}/categories`] as const;
     }
 
     
-export const getApiGroupCategoriesRetrieveQueryOptions = <TData = Awaited<ReturnType<typeof apiGroupCategoriesRetrieve>>, TError = ErrorType<unknown>>(groupName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesRetrieve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getApiGroupCategoriesListQueryOptions = <TData = Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError = ErrorType<unknown>>(groupName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getApiGroupCategoriesRetrieveQueryKey(groupName);
+  const queryKey =  queryOptions?.queryKey ?? getApiGroupCategoriesListQueryKey(groupName);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiGroupCategoriesRetrieve>>> = ({ signal }) => apiGroupCategoriesRetrieve(groupName, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiGroupCategoriesList>>> = ({ signal }) => apiGroupCategoriesList(groupName, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(groupName), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesRetrieve>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(groupName), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type ApiGroupCategoriesRetrieveQueryResult = NonNullable<Awaited<ReturnType<typeof apiGroupCategoriesRetrieve>>>
-export type ApiGroupCategoriesRetrieveQueryError = ErrorType<unknown>
+export type ApiGroupCategoriesListQueryResult = NonNullable<Awaited<ReturnType<typeof apiGroupCategoriesList>>>
+export type ApiGroupCategoriesListQueryError = ErrorType<unknown>
 
 
-export function useApiGroupCategoriesRetrieve<TData = Awaited<ReturnType<typeof apiGroupCategoriesRetrieve>>, TError = ErrorType<unknown>>(
- groupName: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesRetrieve>>, TError, TData>> & Pick<
+export function useApiGroupCategoriesList<TData = Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError = ErrorType<unknown>>(
+ groupName: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof apiGroupCategoriesRetrieve>>,
+          Awaited<ReturnType<typeof apiGroupCategoriesList>>,
           TError,
-          Awaited<ReturnType<typeof apiGroupCategoriesRetrieve>>
+          Awaited<ReturnType<typeof apiGroupCategoriesList>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useApiGroupCategoriesRetrieve<TData = Awaited<ReturnType<typeof apiGroupCategoriesRetrieve>>, TError = ErrorType<unknown>>(
- groupName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesRetrieve>>, TError, TData>> & Pick<
+export function useApiGroupCategoriesList<TData = Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError = ErrorType<unknown>>(
+ groupName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof apiGroupCategoriesRetrieve>>,
+          Awaited<ReturnType<typeof apiGroupCategoriesList>>,
           TError,
-          Awaited<ReturnType<typeof apiGroupCategoriesRetrieve>>
+          Awaited<ReturnType<typeof apiGroupCategoriesList>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useApiGroupCategoriesRetrieve<TData = Awaited<ReturnType<typeof apiGroupCategoriesRetrieve>>, TError = ErrorType<unknown>>(
- groupName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesRetrieve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useApiGroupCategoriesList<TData = Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError = ErrorType<unknown>>(
+ groupName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useApiGroupCategoriesRetrieve<TData = Awaited<ReturnType<typeof apiGroupCategoriesRetrieve>>, TError = ErrorType<unknown>>(
- groupName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesRetrieve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useApiGroupCategoriesList<TData = Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError = ErrorType<unknown>>(
+ groupName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getApiGroupCategoriesRetrieveQueryOptions(groupName,options)
+  const queryOptions = getApiGroupCategoriesListQueryOptions(groupName,options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -478,7 +479,7 @@ export const apiGroupCategoriesCreate = (
 ) => {
       
       
-      return customInstance<Category>(
+      return customInstance<Category[]>(
       {url: `/api/group/${groupName}/categories`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: category, signal
@@ -724,77 +725,77 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
       return useMutation(mutationOptions , queryClient);
     }
-    export const apiGroupsRetrieve = (
+    export const apiGroupsList = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<Group>(
+      return customInstance<Group[]>(
       {url: `/api/groups`, method: 'GET', signal
     },
       options);
     }
   
 
-export const getApiGroupsRetrieveQueryKey = () => {
+export const getApiGroupsListQueryKey = () => {
     return [`/api/groups`] as const;
     }
 
     
-export const getApiGroupsRetrieveQueryOptions = <TData = Awaited<ReturnType<typeof apiGroupsRetrieve>>, TError = ErrorType<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupsRetrieve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getApiGroupsListQueryOptions = <TData = Awaited<ReturnType<typeof apiGroupsList>>, TError = ErrorType<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupsList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getApiGroupsRetrieveQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getApiGroupsListQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiGroupsRetrieve>>> = ({ signal }) => apiGroupsRetrieve(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiGroupsList>>> = ({ signal }) => apiGroupsList(requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiGroupsRetrieve>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiGroupsList>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type ApiGroupsRetrieveQueryResult = NonNullable<Awaited<ReturnType<typeof apiGroupsRetrieve>>>
-export type ApiGroupsRetrieveQueryError = ErrorType<unknown>
+export type ApiGroupsListQueryResult = NonNullable<Awaited<ReturnType<typeof apiGroupsList>>>
+export type ApiGroupsListQueryError = ErrorType<unknown>
 
 
-export function useApiGroupsRetrieve<TData = Awaited<ReturnType<typeof apiGroupsRetrieve>>, TError = ErrorType<unknown>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupsRetrieve>>, TError, TData>> & Pick<
+export function useApiGroupsList<TData = Awaited<ReturnType<typeof apiGroupsList>>, TError = ErrorType<unknown>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupsList>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof apiGroupsRetrieve>>,
+          Awaited<ReturnType<typeof apiGroupsList>>,
           TError,
-          Awaited<ReturnType<typeof apiGroupsRetrieve>>
+          Awaited<ReturnType<typeof apiGroupsList>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useApiGroupsRetrieve<TData = Awaited<ReturnType<typeof apiGroupsRetrieve>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupsRetrieve>>, TError, TData>> & Pick<
+export function useApiGroupsList<TData = Awaited<ReturnType<typeof apiGroupsList>>, TError = ErrorType<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupsList>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof apiGroupsRetrieve>>,
+          Awaited<ReturnType<typeof apiGroupsList>>,
           TError,
-          Awaited<ReturnType<typeof apiGroupsRetrieve>>
+          Awaited<ReturnType<typeof apiGroupsList>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useApiGroupsRetrieve<TData = Awaited<ReturnType<typeof apiGroupsRetrieve>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupsRetrieve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useApiGroupsList<TData = Awaited<ReturnType<typeof apiGroupsList>>, TError = ErrorType<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupsList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useApiGroupsRetrieve<TData = Awaited<ReturnType<typeof apiGroupsRetrieve>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupsRetrieve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export function useApiGroupsList<TData = Awaited<ReturnType<typeof apiGroupsList>>, TError = ErrorType<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupsList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getApiGroupsRetrieveQueryOptions(options)
+  const queryOptions = getApiGroupsListQueryOptions(options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -811,7 +812,7 @@ export const apiGroupsCreate = (
 ) => {
       
       
-      return customInstance<Group>(
+      return customInstance<Group[]>(
       {url: `/api/groups`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: group, signal

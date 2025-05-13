@@ -6,7 +6,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from core.models import Group
 from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import extend_schema
 
+@extend_schema(responses=GroupSerializer(many=True))
 class GroupsView(GenericAPIView):
     authentication_classes = [CookieJWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -30,6 +32,7 @@ class GroupsView(GenericAPIView):
         else:
             return Response(serializer.errors, status=400)
         
+@extend_schema(responses=GroupSerializer)
 class GroupView(GenericAPIView):
     authentication_classes = [CookieJWTAuthentication]
     permission_classes = [IsAuthenticated]

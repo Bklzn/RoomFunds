@@ -18,8 +18,12 @@ class ExpenseSerializer(serializers.ModelSerializer):
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        user = self.context['request'].user
-        self.fields['group'].queryset = Group.objects.filter(members=user)
+        request = self.context.get('request')
+        if request is not None:
+            user = request.user
+            self.fields['group'].queryset = Group.objects.filter(members=user)
+        else:
+            self.fields['group'].queryset = Group.objects.none()
     
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user

@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from user_auth.serializers import UserSerializer
 from django.contrib.auth import logout
+from drf_spectacular.utils import extend_schema
 
 class CookieJWTAuthentication(JWTAuthentication):
     def authenticate(self, request):
@@ -18,13 +19,14 @@ class CookieJWTAuthentication(JWTAuthentication):
         validated_token = self.get_validated_token(raw_token)
         return self.get_user(validated_token), validated_token
 
+@extend_schema(responses=UserSerializer)
 class WhoAmIView(APIView):
     authentication_classes = [CookieJWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         serializer = UserSerializer(request.user)
-        return Response({"user": serializer.data})
+        return Response(serializer.data)
 
 def logout_view(request):
     logout(request)
