@@ -1,23 +1,18 @@
-import { useWhoamiRetrieve } from "./api/whoami/whoami";
 import "./App.css";
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
+import UserContainer from "./components/UserContainer";
 
 function App() {
-  const { data, status, error } = useWhoamiRetrieve();
-
-  if (status === "pending") {
-    return <div>Loading</div>;
-  }
-  if (status === "error") {
-    return <div>An error has occurred: {error.message}</div>;
-  }
-  if (status === "success")
-    return (
-      <>
-        {console.log(data)}
-        <h1>You're logged!</h1>
-        {/* <pre style={{ textAlign: "start" }}>{data}</pre> */}
-      </>
-    );
+  return (
+    <>
+      <div className="py-5 flex flex-col justify-beetween">
+        <UserContainer />
+      </div>
+      <div className="w-full h-full"></div>
+    </>
+  );
 }
-
 export default App;
