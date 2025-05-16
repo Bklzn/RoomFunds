@@ -29,40 +29,40 @@ function processQueue(error: unknown, ok: boolean): void {
   failedQueue = [];
 }
 
-// axiosInstance.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//     const originalRequest = error.config;
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
 
-//     if (error.response?.status === 401 && !originalRequest._retry) {
-//       originalRequest._retry = true;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
 
-//       if (isRefreshing) {
-//         return new Promise((resolve, reject) => {
-//           failedQueue.push({
-//             resolve: () => resolve(axiosInstance(originalRequest)),
-//             reject,
-//           });
-//         });
-//       }
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({
+            resolve: () => resolve(axiosInstance(originalRequest)),
+            reject,
+          });
+        });
+      }
 
-//       isRefreshing = true;
+      isRefreshing = true;
 
-//       try {
-//         await axiosInstance.post("/token/refresh");
-//         processQueue(null, true);
-//         return axiosInstance(originalRequest);
-//       } catch (err) {
-//         processQueue(err, false);
-//         return Promise.reject(err);
-//       } finally {
-//         isRefreshing = false;
-//       }
-//     }
+      try {
+        await axiosInstance.post("/token/refresh");
+        processQueue(null, true);
+        return axiosInstance(originalRequest);
+      } catch (err) {
+        processQueue(err, false);
+        return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
+      }
+    }
 
-//     return Promise.reject(error);
-//   }
-// );
+    return Promise.reject(error);
+  }
+);
 
 export const customInstance = <T>(
   config: AxiosRequestConfig,
