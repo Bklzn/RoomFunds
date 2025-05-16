@@ -1,10 +1,14 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import AuthenticationFailed
 
 from user_auth.serializers import UserSerializer
 from django.contrib.auth import logout
@@ -58,4 +62,26 @@ def set_cookies(request):
         return JsonResponse({"error": "User is not authenticated"}, status=401)
 
     return response
+
+class CookieTokenRefreshView(TokenRefreshView):
+    def post(self, request, *args, **kwargs):
+        refresh_token = request.COOKIES.get('refresh_token')
+        if not refresh_token:
+            raise AuthenticationFailed('Refresh token not found in cookies')
+        
+        serializer = self.get_serializer(data={'refresh': refresh_token})
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
+            raise AuthenticationFailed('Invalid refresh token')
+        
+        access_token = serializer.validated_data['access']
+        new_refresh_token = serializer.validated_data['refresh']
+        
+        response = Response(status=status.HTTP_204_NO_CONTENT)
+        
+        response.set_cookie('access_token', str(access_token), httponly=True, samesite='Strict')
+        response.set_cookie('refresh_token', new_refresh_token, httponly=True, samesite='Strict')
+        
+        return response
     
