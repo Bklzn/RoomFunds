@@ -9,9 +9,11 @@ import {
   TableRow,
 } from "@mui/material";
 import { useApiExpensesList } from "../api/api/api";
+import { useGroup } from "../context/GroupContext";
 
 const ExpensesList: React.FC = () => {
-  const expenses = useApiExpensesList({ groupName: "test" });
+  const { group } = useGroup();
+  const expenses = useApiExpensesList({ groupName: group });
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">

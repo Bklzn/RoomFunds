@@ -9,27 +9,14 @@ import {
   Typography,
 } from "@mui/material";
 import { useApiGroupsList } from "../api/api/api";
-import { Group } from "../api/model";
-import { useEffect, useState } from "react";
+import { useGroup } from "../context/GroupContext";
 
 const GroupSelect: React.FC = () => {
   const groups = useApiGroupsList();
-  const groupStorage = localStorage.getItem("selectedGroup") || "";
-  const [selecetedGroup, setSelectedGroup] =
-    useState<Group["name"]>(groupStorage);
+  const { group, setGroup } = useGroup();
   const handleChange = (event: SelectChangeEvent) => {
-    setSelectedGroup(event.target.value);
-    localStorage.setItem("selectedGroup", event.target.value);
+    setGroup(event.target.value as string);
   };
-
-  useEffect(() => {
-    if (groups.data) {
-      if (selecetedGroup === "") {
-        setSelectedGroup(groups.data[0].name);
-        localStorage.setItem("selectedGroup", groups.data[0].name);
-      }
-    }
-  }, [groups.data, selecetedGroup]);
 
   return (
     <Paper
@@ -51,8 +38,8 @@ const GroupSelect: React.FC = () => {
         ) : (
           <>
             <Select
-              value={selecetedGroup}
-              defaultValue={selecetedGroup}
+              value={group}
+              defaultValue={group}
               label="Your Groups"
               error={groups.isError}
               onChange={handleChange}
@@ -69,5 +56,4 @@ const GroupSelect: React.FC = () => {
     </Paper>
   );
 };
-
 export default GroupSelect;
