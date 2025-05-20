@@ -23,6 +23,8 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  ApiExpensesCreateParams,
+  ApiExpensesListParams,
   Category,
   Expense,
   Group
@@ -255,33 +257,34 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions , queryClient);
     }
     export const apiExpensesList = (
-    
+    params: ApiExpensesListParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<Expense[]>(
-      {url: `/api/expenses`, method: 'GET', signal
+      {url: `/api/expenses`, method: 'GET',
+        params, signal
     },
       options);
     }
   
 
-export const getApiExpensesListQueryKey = () => {
-    return [`/api/expenses`] as const;
+export const getApiExpensesListQueryKey = (params: ApiExpensesListParams,) => {
+    return [`/api/expenses`, ...(params ? [params]: [])] as const;
     }
 
     
-export const getApiExpensesListQueryOptions = <TData = Awaited<ReturnType<typeof apiExpensesList>>, TError = ErrorType<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getApiExpensesListQueryOptions = <TData = Awaited<ReturnType<typeof apiExpensesList>>, TError = ErrorType<unknown>>(params: ApiExpensesListParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getApiExpensesListQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getApiExpensesListQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiExpensesList>>> = ({ signal }) => apiExpensesList(requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiExpensesList>>> = ({ signal }) => apiExpensesList(params, requestOptions, signal);
 
       
 
@@ -295,7 +298,7 @@ export type ApiExpensesListQueryError = ErrorType<unknown>
 
 
 export function useApiExpensesList<TData = Awaited<ReturnType<typeof apiExpensesList>>, TError = ErrorType<unknown>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesList>>, TError, TData>> & Pick<
+ params: ApiExpensesListParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesList>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof apiExpensesList>>,
           TError,
@@ -305,7 +308,7 @@ export function useApiExpensesList<TData = Awaited<ReturnType<typeof apiExpenses
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useApiExpensesList<TData = Awaited<ReturnType<typeof apiExpensesList>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesList>>, TError, TData>> & Pick<
+ params: ApiExpensesListParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesList>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof apiExpensesList>>,
           TError,
@@ -315,16 +318,16 @@ export function useApiExpensesList<TData = Awaited<ReturnType<typeof apiExpenses
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useApiExpensesList<TData = Awaited<ReturnType<typeof apiExpensesList>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ params: ApiExpensesListParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
 export function useApiExpensesList<TData = Awaited<ReturnType<typeof apiExpensesList>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ params: ApiExpensesListParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiExpensesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getApiExpensesListQueryOptions(options)
+  const queryOptions = getApiExpensesListQueryOptions(params,options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -336,13 +339,14 @@ export function useApiExpensesList<TData = Awaited<ReturnType<typeof apiExpenses
 
 
 export const apiExpensesCreate = (
-    
+    params: ApiExpensesCreateParams,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<Expense[]>(
-      {url: `/api/expenses`, method: 'POST', signal
+      {url: `/api/expenses`, method: 'POST',
+        params, signal
     },
       options);
     }
@@ -350,8 +354,8 @@ export const apiExpensesCreate = (
 
 
 export const getApiExpensesCreateMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiExpensesCreate>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof apiExpensesCreate>>, TError,void, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiExpensesCreate>>, TError,{params: ApiExpensesCreateParams}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof apiExpensesCreate>>, TError,{params: ApiExpensesCreateParams}, TContext> => {
 
 const mutationKey = ['apiExpensesCreate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -363,10 +367,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiExpensesCreate>>, void> = () => {
-          
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiExpensesCreate>>, {params: ApiExpensesCreateParams}> = (props) => {
+          const {params} = props ?? {};
 
-          return  apiExpensesCreate(requestOptions)
+          return  apiExpensesCreate(params,requestOptions)
         }
 
         
@@ -379,11 +383,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type ApiExpensesCreateMutationError = ErrorType<unknown>
 
     export const useApiExpensesCreate = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiExpensesCreate>>, TError,void, TContext>, request?: SecondParameter<typeof customInstance>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiExpensesCreate>>, TError,{params: ApiExpensesCreateParams}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof apiExpensesCreate>>,
         TError,
-        void,
+        {params: ApiExpensesCreateParams},
         TContext
       > => {
 

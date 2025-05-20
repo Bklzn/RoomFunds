@@ -2,18 +2,21 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 from django.conf import settings
 from rest_framework.generics import GenericAPIView
-from core.serializers import ExpenseSerializer
+from core.serializers import ExpenseSerializer, GroupSerializer
 from user_auth.views import CookieJWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from core.models import Expense
-from drf_spectacular.utils import extend_schema, OpenApiResponse
+from core.models import Expense, Group
+from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiParameter
 
 def login_view(request):
     redirect_uri = settings.LOGIN_REDIRECT_URL
     return render(request, 'login.html', {'redirect_uri': redirect_uri})
 
-@extend_schema(responses=ExpenseSerializer(many=True))
+@extend_schema(parameters=[
+    OpenApiParameter(name='groupName', description='Group name', required=True, type=str)
+    ],
+    responses=ExpenseSerializer(many=True))
 class ExpensesView(GenericAPIView):
     authentication_classes = [CookieJWTAuthentication]
     permission_classes = [IsAuthenticated]
@@ -21,7 +24,9 @@ class ExpensesView(GenericAPIView):
     queryset = Expense.objects.all()
     
     def get(self, request):
-        expenses = self.get_queryset().filter(user=request.user)
+        group_name = request.GET['groupName']
+        group = Group.objects.get(name=group_name, members__id=request.user.id)
+        expenses = self.get_queryset().filter(group=group.id)
         serializer = self.get_serializer(expenses, many=True)
         return Response(serializer.data)
     

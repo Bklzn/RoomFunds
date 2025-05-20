@@ -4,6 +4,8 @@
  * OpenAPI spec version: 0.0.0
  */
 
+export * from './apiExpensesCreateParams';
+export * from './apiExpensesListParams';
 export * from './category';
 export * from './expense';
 export * from './group';

@@ -11,7 +11,7 @@ import {
 import { useApiExpensesList } from "../api/api/api";
 
 const ExpensesList: React.FC = () => {
-  const expenses = useApiExpensesList();
+  const expenses = useApiExpensesList({ groupName: "test" });
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">

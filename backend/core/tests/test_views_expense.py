@@ -22,6 +22,7 @@ class TestExpenseViews(APITestCase):
             owner=self.user
         )
         self.group.members.add(self.user)
+        self.group.members.add(self.other_user)
         self.other_group = Group.objects.create(
             name='Other Test Group',
             description='Test Description',
@@ -36,6 +37,14 @@ class TestExpenseViews(APITestCase):
             description='Test expense',
             date=timezone.now().date()
         )
+        self.expense2 = Expense.objects.create(
+            user=self.other_user,
+            group=self.group,
+            amount=Decimal('123.00'),
+            category_text='Food',
+            description='Test expense',
+            date=timezone.now().date()
+        )
         self.other_expense = Expense.objects.create(
             user=self.other_user,
             group=self.other_group,
@@ -45,12 +54,12 @@ class TestExpenseViews(APITestCase):
             date=timezone.now().date()
         )
 
-    def test_expenses_list_view_returns_only_user_expenses(self):
+    def test_expenses_list_view_returns_only_group_expenses(self):
         self.client.force_authenticate(user=self.user)
-        response = self.client.get('/api/expenses')
+        response = self.client.get('/api/expenses',data={'groupName': 'Test Group'})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['amount'], '50.00')
+        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data[1]['amount'], '123.00')
 
     def test_expense_creation_with_invalid_data(self):
         self.client.force_authenticate(user=self.user)
