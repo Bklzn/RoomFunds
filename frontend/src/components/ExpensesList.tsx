@@ -13,7 +13,14 @@ import { useGroup } from "../context/GroupContext";
 
 const ExpensesList: React.FC = () => {
   const { group } = useGroup();
-  const expenses = useApiExpensesList({ groupName: group });
+  const expenses = useApiExpensesList(
+    { groupName: group },
+    {
+      query: {
+        queryKey: ["expenses"],
+      },
+    }
+  );
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -47,7 +54,6 @@ const ExpensesList: React.FC = () => {
     </TableContainer>
   );
 };
-
 const LoadingList: React.FC = () => {
   return (
     <>

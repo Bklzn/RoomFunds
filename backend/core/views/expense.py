@@ -13,9 +13,8 @@ def login_view(request):
     redirect_uri = settings.LOGIN_REDIRECT_URL
     return render(request, 'login.html', {'redirect_uri': redirect_uri})
 
-@extend_schema(parameters=[
-    OpenApiParameter(name='groupName', description='Group name', required=True, type=str)
-    ],
+@extend_schema(
+    request=ExpenseSerializer,
     responses=ExpenseSerializer(many=True))
 class ExpensesView(GenericAPIView):
     authentication_classes = [CookieJWTAuthentication]
@@ -23,6 +22,9 @@ class ExpensesView(GenericAPIView):
     serializer_class = ExpenseSerializer
     queryset = Expense.objects.all()
     
+    @extend_schema(parameters=[
+            OpenApiParameter(name='groupName', description='Group name', required=True, type=str)
+    ])
     def get(self, request):
         group_name = request.GET['groupName']
         group = Group.objects.get(name=group_name, members__id=request.user.id)
@@ -36,8 +38,7 @@ class ExpensesView(GenericAPIView):
             serializer.save()
             return Response(serializer.data, status=201)
         else:
-            return Response(serializer.errors, status=400)
-    
+            return Response(serializer.errors, status=400)    
 @extend_schema(responses=ExpenseSerializer)    
 class ExpenseView(GenericAPIView):
     authentication_classes = [CookieJWTAuthentication]

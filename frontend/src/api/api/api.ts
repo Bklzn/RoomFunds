@@ -23,7 +23,6 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  ApiExpensesCreateParams,
   ApiExpensesListParams,
   Category,
   Expense,
@@ -339,14 +338,15 @@ export function useApiExpensesList<TData = Awaited<ReturnType<typeof apiExpenses
 
 
 export const apiExpensesCreate = (
-    params: ApiExpensesCreateParams,
+    expense: BodyType<NonReadonly<Expense>>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<Expense[]>(
       {url: `/api/expenses`, method: 'POST',
-        params, signal
+      headers: {'Content-Type': 'application/json', },
+      data: expense, signal
     },
       options);
     }
@@ -354,8 +354,8 @@ export const apiExpensesCreate = (
 
 
 export const getApiExpensesCreateMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiExpensesCreate>>, TError,{params: ApiExpensesCreateParams}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof apiExpensesCreate>>, TError,{params: ApiExpensesCreateParams}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiExpensesCreate>>, TError,{data: BodyType<NonReadonly<Expense>>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof apiExpensesCreate>>, TError,{data: BodyType<NonReadonly<Expense>>}, TContext> => {
 
 const mutationKey = ['apiExpensesCreate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -367,10 +367,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiExpensesCreate>>, {params: ApiExpensesCreateParams}> = (props) => {
-          const {params} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiExpensesCreate>>, {data: BodyType<NonReadonly<Expense>>}> = (props) => {
+          const {data} = props ?? {};
 
-          return  apiExpensesCreate(params,requestOptions)
+          return  apiExpensesCreate(data,requestOptions)
         }
 
         
@@ -379,15 +379,15 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type ApiExpensesCreateMutationResult = NonNullable<Awaited<ReturnType<typeof apiExpensesCreate>>>
-    
+    export type ApiExpensesCreateMutationBody = BodyType<NonReadonly<Expense>>
     export type ApiExpensesCreateMutationError = ErrorType<unknown>
 
     export const useApiExpensesCreate = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiExpensesCreate>>, TError,{params: ApiExpensesCreateParams}, TContext>, request?: SecondParameter<typeof customInstance>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiExpensesCreate>>, TError,{data: BodyType<NonReadonly<Expense>>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof apiExpensesCreate>>,
         TError,
-        {params: ApiExpensesCreateParams},
+        {data: BodyType<NonReadonly<Expense>>},
         TContext
       > => {
 
