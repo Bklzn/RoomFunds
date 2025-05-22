@@ -42,7 +42,7 @@ export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
   if (groups.isError) {
     return <>{groups.error}</>;
   }
-  if (groups.isLoading) {
+  if (groups.isLoading || !group) {
     return <>loading</>;
   }
   if (groups.isSuccess) {
