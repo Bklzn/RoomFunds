@@ -22,11 +22,8 @@ class CategoriesView(GenericAPIView):
         return Response(serializer.data)
     
     def post(self, request, group_name):
-        data = request.data.copy()
-        if 'group_name' not in data:
-            data['group_name'] = group_name
-
-        serializer = self.get_serializer(data=data)
+        group = get_object_or_404(Group, name=group_name, members=request.user)
+        serializer = self.get_serializer(data=request.data, context={'request': request, 'group': group})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=201)
