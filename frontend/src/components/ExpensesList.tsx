@@ -44,7 +44,7 @@ const ExpensesList: React.FC = () => {
                   {new Date(row.date).toLocaleDateString()}
                 </TableCell>
                 <TableCell align="right">{row.amount}</TableCell>
-                <TableCell align="right">{row.category}</TableCell>
+                <TableCell align="right">{row.category_display}</TableCell>
                 <TableCell align="right">{row.user}</TableCell>
               </TableRow>
             ))

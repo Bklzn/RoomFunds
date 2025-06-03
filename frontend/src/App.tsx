@@ -7,6 +7,7 @@ import UserContainer from "./components/UserContainer";
 import GroupSelect from "./components/GroupSelect";
 import ExpensesList from "./components/ExpensesList";
 import ExpenseAddForm from "./components/ExpenseAddForm";
+import Category from "./components/Category";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       </div>
       <div className="w-full h-full">
         <ExpensesList />
+        <Category />
         <ExpenseAddForm />
       </div>
     </>
