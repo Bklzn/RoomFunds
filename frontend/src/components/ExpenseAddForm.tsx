@@ -45,7 +45,11 @@ const ExpenseAddForm: React.FC = () => {
   const [isDescShowed, setIsDescShowed] = useState(false);
   const [categoryValue, setCategoryValue] = useState<string | null>(null);
   const { group } = useGroup();
-  const categories = useApiGroupCategoriesList(group);
+  const categories = useApiGroupCategoriesList(group, {
+    query: {
+      queryKey: ["category", group],
+    },
+  });
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState<FormProps>({
     date: "",
@@ -102,7 +106,13 @@ const ExpenseAddForm: React.FC = () => {
   };
   return (
     <>
-      <Button variant="contained" onClick={() => setOpen(true)}>
+      <Button
+        variant="contained"
+        onClick={() => {
+          setOpen(true);
+          console.log(categoryValue);
+        }}
+      >
         Add new expenses
       </Button>
       <Modal open={open} onClose={() => setOpen(false)}>
@@ -138,13 +148,13 @@ const ExpenseAddForm: React.FC = () => {
                     freeSolo
                     className="flex-3"
                     options={categories.data!.map((c) => c.name)}
-                    value={categoryValue}
+                    value={formData.category}
                     onChange={(_e, v) => {
                       setCategoryValue(v);
                     }}
                     onInputChange={(_e, v, r) => {
-                      setCategoryValue(null);
                       if (r === "clear") {
+                        setCategoryValue(null);
                         handleChange({
                           target: { name: "category", value: "" },
                         } as ChangeEvent<HTMLInputElement>);
@@ -165,13 +175,6 @@ const ExpenseAddForm: React.FC = () => {
                   />
                 </>
               )}
-              {/* <TextField
-                label="Category"
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                className="flex-3"
-              /> */}
               <Button
                 type="button"
                 variant="outlined"
