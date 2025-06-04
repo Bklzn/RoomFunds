@@ -78,7 +78,6 @@ const ExpenseAddForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(categoryValue, "-", formData.category);
     if (categoryValue === null) {
       if (formData.category === "") {
         console.error("Category is not selected");
@@ -93,16 +92,24 @@ const ExpenseAddForm: React.FC = () => {
         if (result === "cancel") return;
       }
     }
-    saveExpenses.mutateAsync({ data: { ...formData, group } }).then(
-      () => {
-        console.log("expense created");
-        queryClient.invalidateQueries({ queryKey: ["expenses"] });
-        setOpen(false);
-      },
-      (err) => {
-        console.error(err);
-      }
-    );
+    saveExpenses
+      .mutateAsync({
+        data: {
+          ...formData,
+          description: isDescShowed ? formData.description : "",
+          group,
+        },
+      })
+      .then(
+        () => {
+          console.log("expense created");
+          queryClient.invalidateQueries({ queryKey: ["expenses"] });
+          setOpen(false);
+        },
+        (err) => {
+          console.error(err);
+        }
+      );
   };
   return (
     <>
@@ -110,7 +117,6 @@ const ExpenseAddForm: React.FC = () => {
         variant="contained"
         onClick={() => {
           setOpen(true);
-          console.log(categoryValue);
         }}
       >
         Add new expenses
@@ -180,9 +186,9 @@ const ExpenseAddForm: React.FC = () => {
                 variant="outlined"
                 className="flex-2"
                 size="small"
-                onClick={() => setIsDescShowed(true)}
+                onClick={() => setIsDescShowed((v) => !v)}
               >
-                Add Description
+                {isDescShowed ? "Remove" : "Add"} Description
               </Button>
             </div>
             <TextareaAutosize
