@@ -1,6 +1,6 @@
 from decimal import Decimal
 from rest_framework import serializers
-
+from django.utils import timezone
 from user_auth.serializers import UserSerializer
 from ..models import Expense, Group, Category
 
@@ -53,6 +53,11 @@ class ExpenseSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+    
+    def validate_date(self, value):
+        if value > timezone.now().date():
+            raise serializers.ValidationError("Date cannot be in the future.")
+        return value
 
     def get_user(self, obj):
         return UserSerializer(obj.user).data['display']

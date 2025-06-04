@@ -41,6 +41,13 @@ class TestExpenseSerializer(APITestCase):
         serializer = ExpenseSerializer(data=data, context={'request': self.request})
         self.assertFalse(serializer.is_valid())
         self.assertIn('amount', serializer.errors)
+        
+    def test_expense_serializer_invalid_future_date(self):
+        data = self.valid_data
+        data['date'] = '2050-12-31'
+        serializer = ExpenseSerializer(data=data, context={'request': self.request})
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('date', serializer.errors)
 
     def test_expense_serializer_invalid_group(self):
         self.unknown_user = User.objects.create_user(username='unnknownuser', password='testpass123')
