@@ -9,19 +9,13 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import {
-  ChangeEvent,
-  Dispatch,
-  RefObject,
-  SetStateAction,
-  useRef,
-  useState,
-} from "react";
+import { Dispatch, RefObject, SetStateAction, useRef, useState } from "react";
 import {
   useApiExpensesCreate,
   useApiGroupCategoriesCreate,
   useApiGroupCategoriesList,
 } from "../api/api/api";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { useGroup } from "../context/GroupContext";
 import { Expense } from "../api/model";
 import { useQueryClient } from "@tanstack/react-query";
@@ -37,7 +31,7 @@ const modalStyles = {
   p: 4,
 };
 
-type FormProps = Omit<Expense, "user" | "category_display">;
+type FormProps = Omit<Expense, "user" | "category_display" | "group">;
 
 const ExpenseAddForm: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -45,19 +39,22 @@ const ExpenseAddForm: React.FC = () => {
   const [isDescShowed, setIsDescShowed] = useState(false);
   const [categoryValue, setCategoryValue] = useState<string | null>(null);
   const { group } = useGroup();
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    setValue,
+    formState: { errors },
+    setError,
+  } = useForm<FormProps>({
+    defaultValues: { amount: "", description: "", category: "", date: "" },
+  });
   const categories = useApiGroupCategoriesList(group, {
     query: {
       queryKey: ["category", group],
     },
   });
   const queryClient = useQueryClient();
-  const [formData, setFormData] = useState<FormProps>({
-    date: "",
-    amount: "0",
-    category: "",
-    description: "",
-    group: "",
-  });
   const saveExpenses = useApiExpensesCreate();
   const modalResolveRef = useRef<(value: "submit" | "cancel") => void>(
     () => {}
@@ -69,22 +66,18 @@ const ExpenseAddForm: React.FC = () => {
       setChildOpen(true);
     });
   };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit: SubmitHandler<FormProps> = async (data) => {
     if (categoryValue === null) {
-      if (formData.category === "") {
+      if (data.category === "") {
         console.error("Category is not selected");
+        setError("category", {
+          type: "manual",
+          message: "Category is not selected",
+        });
         return;
       }
       const isNewCategory = !categories.data?.some(
-        (c) => c.name === formData.category
+        (c) => c.name === data.category
       );
 
       if (isNewCategory) {
@@ -95,8 +88,8 @@ const ExpenseAddForm: React.FC = () => {
     saveExpenses
       .mutateAsync({
         data: {
-          ...formData,
-          description: isDescShowed ? formData.description : "",
+          ...data,
+          description: isDescShowed ? data.description : "",
           group,
         },
       })
@@ -108,6 +101,11 @@ const ExpenseAddForm: React.FC = () => {
         },
         (err) => {
           console.error(err);
+          Object.keys(err.response?.data).forEach((key) => {
+            setError(key as keyof FormProps, {
+              message: err.response?.data[key][0],
+            });
+          });
         }
       );
   };
@@ -126,22 +124,22 @@ const ExpenseAddForm: React.FC = () => {
           <Typography variant="h6" component="h2" mb={2}>
             Formularz
           </Typography>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-row gap-4 flex-wrap">
               <TextField
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
+                {...register("date")}
                 type="date"
                 className="flex-3"
+                error={!!errors.date}
+                helperText={errors.date ? errors.date?.message : ""}
               />
               <TextField
+                {...register("amount")}
                 label="Amount"
-                name="amount"
                 type="number"
-                value={formData.amount}
-                onChange={handleChange}
                 className="flex-3"
+                error={!!errors.amount}
+                helperText={errors.date ? errors.amount?.message : ""}
               />
               {categories.isLoading ? (
                 <Skeleton animation="wave" sx={{ height: 50 }} />
@@ -154,28 +152,27 @@ const ExpenseAddForm: React.FC = () => {
                     freeSolo
                     className="flex-3"
                     options={categories.data!.map((c) => c.name)}
-                    value={formData.category}
+                    value={getValues("category")}
+                    // error={!!errors.date}
+                    // helperText={errors.date ? errors.date?.message : ""}
                     onChange={(_e, v) => {
                       setCategoryValue(v);
                     }}
                     onInputChange={(_e, v, r) => {
                       if (r === "clear") {
                         setCategoryValue(null);
-                        handleChange({
-                          target: { name: "category", value: "" },
-                        } as ChangeEvent<HTMLInputElement>);
+                        setValue("category", "");
                         return;
                       }
-                      handleChange({
-                        target: { name: "category", value: v },
-                      } as ChangeEvent<HTMLInputElement>);
+                      setValue("category", v);
                     }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
+                        {...register("category")}
                         label="Category"
-                        name="category"
-                        value={formData.category}
+                        error={!!errors.category}
+                        helperText={errors.date ? errors.category?.message : ""}
                       />
                     )}
                   />
@@ -200,16 +197,14 @@ const ExpenseAddForm: React.FC = () => {
                 marginTop: 20,
               }}
               minRows={3}
-              onChange={handleChange}
-              name="description"
-              value={formData.description}
+              {...register("description")}
             />
             <Button type="submit" variant="contained" sx={{ mt: 2 }}>
               Save
             </Button>
           </form>
           <CategoryAddModal
-            categoryName={formData.category}
+            categoryName={getValues("category")}
             open={childOpen}
             setOpen={setChildOpen}
             resolveRef={modalResolveRef}
