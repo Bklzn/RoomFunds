@@ -29,9 +29,9 @@ class GroupSerializerTest(APITestCase):
         
         self.assertEqual(data['name'], 'Test Group')
         self.assertEqual(data['description'], 'Test Description')
-        self.assertEqual(userS['display'], data['owner'])
-        self.assertIn(moderatorS['display'], data['moderators'])
-        self.assertIn(memberS['display'], data['members'])
+        self.assertEqual(userS['id'], data['owner'])
+        self.assertIn(moderatorS['id'], data['moderators'])
+        self.assertIn(memberS['id'], data['members'])
 
     def test_group_serializer_create(self):
         data = {

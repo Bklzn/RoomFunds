@@ -2,7 +2,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 from django.conf import settings
 from rest_framework.generics import GenericAPIView
-from core.serializers import ExpenseSerializer, GroupSerializer
+from core.serializers import ExpenseSerializer
 from user_auth.views import CookieJWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response

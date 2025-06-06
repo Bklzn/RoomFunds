@@ -4,7 +4,7 @@ from rest_framework.test import APIRequestFactory, APITestCase
 from django.contrib.auth.models import User
 from core.models import Group, Category
 from core.serializers import ExpenseSerializer
-from user_auth.serializers import UserSerializer
+from user_auth.serializers import UserSocialAuthSerializer
 
 class TestExpenseSerializer(APITestCase):
     def setUp(self):
@@ -26,7 +26,7 @@ class TestExpenseSerializer(APITestCase):
         self.valid_data = {
             'group': 'Test Group',
             'amount': '50.00',
-            'category': 'Test Category',
+            'category_input': 'Test Category',
             'description': 'Dinner',
             'date': '2023-01-01'
         }
@@ -69,7 +69,7 @@ class TestExpenseSerializer(APITestCase):
         serializer = ExpenseSerializer(expense, context={'request': self.request})
         self.assertEqual(
             serializer.data['user'], 
-            UserSerializer(self.user).data['display']
+            UserSocialAuthSerializer(self.user).data['id']
         )
 
     def test_expense_serializer_read_only_fields(self):
@@ -84,15 +84,15 @@ class TestExpenseSerializer(APITestCase):
         serializer = ExpenseSerializer(data=self.valid_data, context={'request': self.request})
         serializer.is_valid()
         expense = serializer.save()
-        self.assertEqual(expense.category_obj, self.category)
+        self.assertEqual(expense.category, self.category)
         
     def test_expense_serializer_category_outside_the_group(self):
         data = {
             **self.valid_data,
-            'category': 'Category not in the Group',
+            'category_input': 'Category not in the Group',
         }
         serializer = ExpenseSerializer(data=data, context={'request': self.request})
         serializer.is_valid()
         expense = serializer.save()
-        self.assertEqual(expense.category_text, data['category'])
+        self.assertEqual(expense.category_text, data['category_input'])
         

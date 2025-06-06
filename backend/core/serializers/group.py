@@ -33,13 +33,13 @@ class GroupSerializer(serializers.ModelSerializer):
         return group
     
     def get_owner(self, obj):
-        return UserSerializer(instance=obj.owner).data['display']
+        return UserSerializer(instance=obj.owner).data['id']
 
     def get_moderators(self, obj):
         serializers = UserSerializer(instance=obj.moderators.all(), many=True).data
-        return [user['display'] for user in serializers]
+        return [user['id'] for user in serializers]
         
     def get_members(self, obj):
         serializers = UserSerializer(instance=obj.members.all(), many=True).data
-        return [user['display'] for user in serializers]
+        return [user['id'] for user in serializers]
     

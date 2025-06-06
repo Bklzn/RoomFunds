@@ -16,7 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'avatar', 'display']
+        fields = ['id','username', 'email', 'first_name', 'last_name', 'avatar', 'display']
 
     def get_avatar(self, user):
         social = user.social_auth.filter(provider='google-oauth2').first()

@@ -23,7 +23,7 @@ class ExpenseModelTest(APITestCase):
             'user': self.user,
             'group': self.group,
             'amount': Decimal('100.50'),
-            'category_obj': self.category,
+            'category': self.category,
             'description': 'Lunch',
             'date': timezone.now().date()
         }
@@ -32,7 +32,7 @@ class ExpenseModelTest(APITestCase):
     def test_create_expense(self):
         expense = Expense.objects.create(**self.valid_expense_data)
         self.assertEqual(expense.amount, Decimal('100.50'))
-        self.assertEqual(expense.category_obj, self.category)
+        self.assertEqual(expense.category, self.category)
         self.assertEqual(expense.description, 'Lunch')
         self.assertEqual(expense.user, self.user)
         self.assertEqual(expense.group, self.group) 
@@ -67,8 +67,8 @@ class ExpenseModelTest(APITestCase):
         
     def test_blank_category_allowed(self):
         expense_data = self.valid_expense_data.copy()
-        expense_data['category_obj'] = None
+        expense_data['category'] = None
         expense_data['category_text'] = ''
         expense = Expense.objects.create(**expense_data)
         self.assertEqual(expense.category_text, '')
-        self.assertEqual(expense.category_obj, None)
+        self.assertEqual(expense.category, None)
