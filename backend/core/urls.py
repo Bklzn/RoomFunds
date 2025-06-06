@@ -9,4 +9,5 @@ urlpatterns = [
     path("api/groups", views.GroupsView.as_view(), name="groups"),
     path("api/group/<str:name>", views.GroupView.as_view(), name="group"),
     path("api/group/<str:group_name>/categories", views.CategoriesView.as_view(), name="group_categories"),
+    path("api/group/<str:group_name>/users", views.GroupMemberView.as_view(), name="group_users"),
 ]

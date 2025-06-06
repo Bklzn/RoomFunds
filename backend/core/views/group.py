@@ -1,6 +1,8 @@
 from django.http import Http404
 from rest_framework.generics import GenericAPIView
 from core.serializers import GroupSerializer
+from user_auth.serializers import UserSerializer
+from django.contrib.auth.models import User
 from user_auth.views import CookieJWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -73,3 +75,16 @@ class GroupView(GenericAPIView):
         
         group.delete()
         return Response(status=204)
+    
+@extend_schema(responses=UserSerializer(many=True))
+class GroupMemberView(GenericAPIView):
+    authentication_classes = [CookieJWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+    
+    def get(self, request, group_name):
+        group = get_object_or_404(Group, name=group_name, members=request.user)
+        users = group.members.all()
+        serializer = self.get_serializer(users, many=True)
+        return Response(serializer.data)
