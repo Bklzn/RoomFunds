@@ -8,12 +8,10 @@ interface Props {
 const Category: React.FC<Props> = ({ categoryId }) => {
   const { categories } = useGroup();
 
-  const filteredCategories = categories.filter(
-    (c) => String(c.id) == categoryId
-  );
+  const filteredCategories = categories.find((c) => String(c.id) == categoryId);
 
-  return filteredCategories.length > 0 ? (
-    <Chip label={filteredCategories[0].name} />
+  return filteredCategories ? (
+    <Chip label={filteredCategories.name} />
   ) : (
     categoryId
   );
