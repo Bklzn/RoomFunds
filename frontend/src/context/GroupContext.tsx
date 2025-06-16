@@ -5,16 +5,19 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { useApiGroupsList } from "../api/api/api";
+import { useApiGroupCategoriesList, useApiGroupsList } from "../api/api/api";
+import { Category } from "../api/model";
 
 interface GroupContextProps {
   group: string;
   setGroup: (value: SetStateAction<string>) => void;
+  categories: Category[];
 }
 
 const GroupContext = createContext<GroupContextProps>({
   group: "",
   setGroup: () => {},
+  categories: [],
 });
 export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -22,6 +25,12 @@ export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
   const groups = useApiGroupsList();
   const storage = localStorage.getItem("selectedGroup");
   const [group, setGroup] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const categoriesApi = useApiGroupCategoriesList(group, {
+    query: {
+      queryKey: ["category", group],
+    },
+  });
 
   useEffect(() => {
     if (groups.isSuccess) {
@@ -32,7 +41,8 @@ export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
         setGroup(storage);
       }
     }
-  }, [groups.data, groups, storage]);
+    if (categoriesApi.isSuccess) setCategories(categoriesApi.data);
+  }, [groups.data, groups, storage, categoriesApi]);
 
   const setGroupManually = (value: SetStateAction<string>) => {
     setGroup(value);
@@ -47,7 +57,9 @@ export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
   }
   if (groups.isSuccess) {
     return (
-      <GroupContext.Provider value={{ group, setGroup: setGroupManually }}>
+      <GroupContext.Provider
+        value={{ group, setGroup: setGroupManually, categories }}
+      >
         {children}
       </GroupContext.Provider>
     );

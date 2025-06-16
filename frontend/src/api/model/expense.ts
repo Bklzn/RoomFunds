@@ -9,8 +9,8 @@ export interface Expense {
   group: string;
   /** @pattern ^-?\d{0,8}(?:\.\d{0,2})?$ */
   amount: string;
-  category: string;
-  readonly category_display: string;
+  readonly category: string;
+  category_input?: string;
   description?: string;
   date: string;
 }

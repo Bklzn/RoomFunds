@@ -8,4 +8,5 @@ export interface Category {
   /** @maxLength 255 */
   name: string;
   description?: string;
+  readonly id: number;
 }

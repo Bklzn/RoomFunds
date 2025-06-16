@@ -1,32 +1,21 @@
-import { Box, Chip, CircularProgress, Grid, Paper } from "@mui/material";
-import { useApiGroupCategoriesList } from "../api/api/api";
+import { Chip } from "@mui/material";
 import { useGroup } from "../context/GroupContext";
 
-const Category: React.FC = () => {
-  const { group } = useGroup();
-  const categories = useApiGroupCategoriesList(group, {
-    query: {
-      queryKey: ["category", group],
-    },
-  });
+interface Props {
+  categoryId: string;
+}
 
-  return (
-    <Box sx={{ my: 3 }}>
-      <h2>Categories</h2>
-      <Paper sx={{ p: 1 }}>
-        {categories.isLoading ? (
-          <CircularProgress />
-        ) : categories.isError ? (
-          <p>{categories.error.message}</p>
-        ) : (
-          <Grid container spacing={1} sx={{ flexWrap: "wrap" }}>
-            {categories.data!.map((c, i) => (
-              <Chip label={c.name} key={`${i}-${c}`} />
-            ))}
-          </Grid>
-        )}
-      </Paper>
-    </Box>
+const Category: React.FC<Props> = ({ categoryId }) => {
+  const { categories } = useGroup();
+
+  const filteredCategories = categories.filter(
+    (c) => String(c.id) == categoryId
+  );
+
+  return filteredCategories.length > 0 ? (
+    <Chip label={filteredCategories[0].name} />
+  ) : (
+    categoryId
   );
 };
 

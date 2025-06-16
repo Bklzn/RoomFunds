@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { useApiExpensesList } from "../api/api/api";
 import { useGroup } from "../context/GroupContext";
+import Category from "./Category";
 
 const ExpensesList: React.FC = () => {
   const { group } = useGroup();
@@ -17,7 +18,7 @@ const ExpensesList: React.FC = () => {
     { groupName: group },
     {
       query: {
-        queryKey: ["expenses"],
+        queryKey: ["expenses", group],
       },
     }
   );
@@ -44,7 +45,9 @@ const ExpensesList: React.FC = () => {
                   {new Date(row.date).toLocaleDateString()}
                 </TableCell>
                 <TableCell align="right">{row.amount}</TableCell>
-                <TableCell align="right">{row.category_display}</TableCell>
+                <TableCell align="right">
+                  <Category categoryId={row.category} />
+                </TableCell>
                 <TableCell align="right">{row.user}</TableCell>
               </TableRow>
             ))
