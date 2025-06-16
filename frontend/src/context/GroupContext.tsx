@@ -5,19 +5,25 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { useApiGroupCategoriesList, useApiGroupsList } from "../api/api/api";
-import { Category } from "../api/model";
+import {
+  useApiGroupCategoriesList,
+  useApiGroupsList,
+  useApiGroupUsersList,
+} from "../api/api/api";
+import { Category, User } from "../api/model";
 
 interface GroupContextProps {
   group: string;
   setGroup: (value: SetStateAction<string>) => void;
   categories: Category[];
+  users: User[];
 }
 
 const GroupContext = createContext<GroupContextProps>({
   group: "",
   setGroup: () => {},
   categories: [],
+  users: [],
 });
 export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -26,6 +32,12 @@ export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
   const storage = localStorage.getItem("selectedGroup");
   const [group, setGroup] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const usersApi = useApiGroupUsersList(group, {
+    query: {
+      queryKey: ["users", group],
+    },
+  });
   const categoriesApi = useApiGroupCategoriesList(group, {
     query: {
       queryKey: ["category", group],
@@ -42,7 +54,8 @@ export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
       }
     }
     if (categoriesApi.isSuccess) setCategories(categoriesApi.data);
-  }, [groups.data, groups, storage, categoriesApi]);
+    if (usersApi.isSuccess) setUsers(usersApi.data);
+  }, [groups.data, groups, storage, categoriesApi, usersApi]);
 
   const setGroupManually = (value: SetStateAction<string>) => {
     setGroup(value);
@@ -58,7 +71,7 @@ export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
   if (groups.isSuccess) {
     return (
       <GroupContext.Provider
-        value={{ group, setGroup: setGroupManually, categories }}
+        value={{ group, setGroup: setGroupManually, categories, users }}
       >
         {children}
       </GroupContext.Provider>

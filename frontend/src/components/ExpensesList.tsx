@@ -11,6 +11,7 @@ import {
 import { useApiExpensesList } from "../api/api/api";
 import { useGroup } from "../context/GroupContext";
 import Category from "./Category";
+import User from "./User";
 
 const ExpensesList: React.FC = () => {
   const { group } = useGroup();
@@ -48,7 +49,15 @@ const ExpensesList: React.FC = () => {
                 <TableCell align="right">
                   <Category categoryId={row.category} />
                 </TableCell>
-                <TableCell align="right">{row.user}</TableCell>
+                <TableCell>
+                  <User
+                    variant="hover"
+                    userId={row.user}
+                    boxProps={{
+                      sx: { width: 30, marginLeft: "auto" },
+                    }}
+                  />
+                </TableCell>
               </TableRow>
             ))
           )}
