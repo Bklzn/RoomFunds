@@ -106,3 +106,13 @@ class TestExpenseViews(APITestCase):
     def test_unauthenticated_access_denied(self):
         response = self.client.get('/api/expenses')
         self.assertEqual(response.status_code, 401)
+        
+    def test_no_groupName_parameter(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get('/api/expenses')
+        self.assertEqual(response.status_code, 404)
+        
+    def test_invalid_groupName_parameter(self):
+        self.client.force_authenticate(user=self.user)
+        response = self.client.get('/api/expenses',data={'groupName': 'Invalid Group'})
+        self.assertEqual(response.status_code, 404)

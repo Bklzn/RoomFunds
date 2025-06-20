@@ -26,8 +26,11 @@ class ExpensesView(GenericAPIView):
             OpenApiParameter(name='groupName', description='Group name', required=True, type=str)
     ])
     def get(self, request):
-        group_name = request.GET['groupName']
-        group = Group.objects.get(name=group_name, members__id=request.user.id)
+        try:
+            group_name = request.GET['groupName']
+        except KeyError:
+            raise Http404('No groupName provided')
+        group = get_object_or_404(Group, name=group_name, members=request.user)
         expenses = self.get_queryset().filter(group=group.id)
         serializer = self.get_serializer(expenses, many=True)
         return Response(serializer.data)
