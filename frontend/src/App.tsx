@@ -7,12 +7,14 @@ import WhoamiContainer from "./components/WhoamiContainer";
 import GroupSelect from "./components/GroupSelect";
 import ExpensesList from "./components/ExpensesList";
 import ExpenseAddForm from "./components/ExpenseAddForm";
+import UserBalance from "./components/UserBalance";
 
 function App() {
   return (
     <>
       <div className="py-5 flex flex-row justify-between w-full">
         <GroupSelect />
+        <UserBalance />
         <WhoamiContainer />
       </div>
       <div className="w-full h-full">
