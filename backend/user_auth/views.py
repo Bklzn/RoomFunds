@@ -2,7 +2,6 @@ from django.http import JsonResponse
 from django.shortcuts import redirect
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
-from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.views import APIView
@@ -13,6 +12,10 @@ from rest_framework.exceptions import AuthenticationFailed
 from user_auth.serializers import UserSerializer
 from django.contrib.auth import logout
 from drf_spectacular.utils import extend_schema
+from .models import LoginCode
+from django.utils import timezone
+from datetime import timedelta
+import json
 
 class CookieJWTAuthentication(JWTAuthentication):
     def authenticate(self, request):
@@ -41,9 +44,10 @@ def logout_view(request):
 
 
 def oauth_redirect(request):
-    response: JsonResponse = set_cookies(request)
+    response: JsonResponse = set_tokens(request)
     if response.status_code > 199 and response.status_code < 300:
-        response_redirect = redirect('http://localhost:5173')
+        code = json.loads(response.content)['code']
+        response_redirect = redirect('http://localhost:5173?code=' + str(code))
         response_redirect.cookies = response.cookies
         return response_redirect
     else:
@@ -63,7 +67,34 @@ def set_cookies(request):
 
     return response
 
-class CookieTokenRefreshView(TokenRefreshView):
+def set_tokens(request):
+    if request.user.is_authenticated:
+        user = request.user
+        refresh = RefreshToken.for_user(user)
+        access_token = refresh.access_token
+        
+        code = LoginCode.objects.create(
+            user=user,
+            access_token=access_token,
+            refresh_token=str(refresh),
+            expires_at=timezone.now() + timedelta(minutes=1),
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+            ip_address=get_client_ip(request)
+        )
+        
+        code.save()
+
+        return JsonResponse({"message": "Tokens set successfully", "code": str(code)}, status=201)
+    
+    return JsonResponse({"error": "User is not authenticated"}, status=401)
+        
+def get_client_ip(request):
+    xff = request.META.get('HTTP_X_FORWARDED_FOR')
+    if xff:
+        return xff.split(',')[0]
+    return request.META.get('REMOTE_ADDR')
+
+class CookieTokenRefreshView(TokenRefreshView): 
     def post(self, request, *args, **kwargs):
         refresh_token = request.COOKIES.get('refresh_token')
         if not refresh_token:
@@ -85,3 +116,28 @@ class CookieTokenRefreshView(TokenRefreshView):
         
         return response
     
+class CodeExchangeView(APIView):
+    def get(self, request, code):
+        
+        try:
+            login_code = LoginCode.objects.get(code=code)
+        except Exception as e:
+            raise AuthenticationFailed('Invalid code')
+        
+        requestIp = get_client_ip(request)
+        requestUserAgent = request.META.get('HTTP_USER_AGENT', '')
+
+        if login_code.ip_address != requestIp or login_code.user_agent != requestUserAgent:
+            raise AuthenticationFailed('Invalid code')
+        
+        if timezone.now() > login_code.expires_at:
+            login_code.delete()
+            raise AuthenticationFailed('Expired code')
+
+        refresh = RefreshToken(login_code.refresh_token)
+        access_token = refresh.access_token
+        login_code.delete()
+
+        return Response(
+            {'access_token': str(access_token), 'refresh_token': str(refresh)}
+            , status=200)

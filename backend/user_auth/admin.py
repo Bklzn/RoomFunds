@@ -1,5 +1,6 @@
 from django.contrib import admin
 from social_django.models import UserSocialAuth
+from .models import LoginCode
 from django.utils.html import mark_safe
 
 class UserSocialAuthAdminWithAvatar(admin.ModelAdmin):
@@ -18,3 +19,4 @@ class UserSocialAuthAdminWithAvatar(admin.ModelAdmin):
 # Odrejestrowujemy domyślną i rejestrujemy własną wersję
 admin.site.unregister(UserSocialAuth)
 admin.site.register(UserSocialAuth, UserSocialAuthAdminWithAvatar)
+admin.site.register(LoginCode)
