@@ -29,6 +29,15 @@ function processQueue(error: unknown, ok: boolean): void {
   failedQueue = [];
 }
 
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("access_token");
+  if (token) {
+    config.headers = config.headers || {};
+    config.headers["Authorization"] = `Bearer ${token}`;
+  }
+  return config;
+});
+
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -49,7 +58,20 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        await axiosInstance.post("/token/refresh");
+        const refresh = localStorage.getItem("refresh_token");
+        if (!refresh) throw new Error("No refresh token");
+
+        const res = await axiosInstance.post(`/token/refresh/${refresh}`);
+
+        if (res.status === 200) {
+          localStorage.setItem("access_token", res.data.access_token);
+          localStorage.setItem("refresh_token", res.data.refresh_token);
+          originalRequest.headers[
+            "Authorization"
+          ] = `Bearer ${res.data.access_token}`;
+        } else {
+          throw new Error("Refresh token is invalid");
+        }
         processQueue(null, true);
         return axiosInstance(originalRequest);
       } catch (err) {

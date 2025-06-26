@@ -4,18 +4,29 @@
  * OpenAPI spec version: 0.0.0
  */
 import {
-  useMutation
+  useMutation,
+  useQuery
 } from '@tanstack/react-query';
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
   QueryClient,
+  QueryFunction,
+  QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
-  UseMutationResult
+  UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult
 } from '@tanstack/react-query';
 
 import type {
+  TokenExchangeRetrieve200,
   TokenObtainPair,
-  TokenRefresh
+  TokenRefresh,
+  TokenRefreshCreate200
 } from '.././model';
 
 import { customInstance } from '.././client';
@@ -115,18 +126,100 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
       return useMutation(mutationOptions , queryClient);
     }
-    /**
+    export const tokenExchangeRetrieve = (
+    code: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<TokenExchangeRetrieve200>(
+      {url: `/token/exchange/${code}`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getTokenExchangeRetrieveQueryKey = (code: string,) => {
+    return [`/token/exchange/${code}`] as const;
+    }
+
+    
+export const getTokenExchangeRetrieveQueryOptions = <TData = Awaited<ReturnType<typeof tokenExchangeRetrieve>>, TError = ErrorType<void>>(code: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof tokenExchangeRetrieve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTokenExchangeRetrieveQueryKey(code);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof tokenExchangeRetrieve>>> = ({ signal }) => tokenExchangeRetrieve(code, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(code), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof tokenExchangeRetrieve>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type TokenExchangeRetrieveQueryResult = NonNullable<Awaited<ReturnType<typeof tokenExchangeRetrieve>>>
+export type TokenExchangeRetrieveQueryError = ErrorType<void>
+
+
+export function useTokenExchangeRetrieve<TData = Awaited<ReturnType<typeof tokenExchangeRetrieve>>, TError = ErrorType<void>>(
+ code: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof tokenExchangeRetrieve>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tokenExchangeRetrieve>>,
+          TError,
+          Awaited<ReturnType<typeof tokenExchangeRetrieve>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTokenExchangeRetrieve<TData = Awaited<ReturnType<typeof tokenExchangeRetrieve>>, TError = ErrorType<void>>(
+ code: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof tokenExchangeRetrieve>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof tokenExchangeRetrieve>>,
+          TError,
+          Awaited<ReturnType<typeof tokenExchangeRetrieve>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useTokenExchangeRetrieve<TData = Awaited<ReturnType<typeof tokenExchangeRetrieve>>, TError = ErrorType<void>>(
+ code: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof tokenExchangeRetrieve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useTokenExchangeRetrieve<TData = Awaited<ReturnType<typeof tokenExchangeRetrieve>>, TError = ErrorType<void>>(
+ code: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof tokenExchangeRetrieve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getTokenExchangeRetrieveQueryOptions(code,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
  * Takes a refresh type JSON web token and returns an access type JSON web
 token if the refresh token is valid.
  */
 export const tokenRefreshCreate = (
+    refresh: string,
     tokenRefresh: BodyType<NonReadonly<TokenRefresh>>,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
-      return customInstance<TokenRefresh>(
-      {url: `/token/refresh`, method: 'POST',
+      return customInstance<TokenRefreshCreate200>(
+      {url: `/token/refresh/${refresh}`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: tokenRefresh, signal
     },
@@ -135,9 +228,9 @@ export const tokenRefreshCreate = (
   
 
 
-export const getTokenRefreshCreateMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof tokenRefreshCreate>>, TError,{data: BodyType<NonReadonly<TokenRefresh>>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof tokenRefreshCreate>>, TError,{data: BodyType<NonReadonly<TokenRefresh>>}, TContext> => {
+export const getTokenRefreshCreateMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof tokenRefreshCreate>>, TError,{refresh: string;data: BodyType<NonReadonly<TokenRefresh>>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof tokenRefreshCreate>>, TError,{refresh: string;data: BodyType<NonReadonly<TokenRefresh>>}, TContext> => {
 
 const mutationKey = ['tokenRefreshCreate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -149,10 +242,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof tokenRefreshCreate>>, {data: BodyType<NonReadonly<TokenRefresh>>}> = (props) => {
-          const {data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof tokenRefreshCreate>>, {refresh: string;data: BodyType<NonReadonly<TokenRefresh>>}> = (props) => {
+          const {refresh,data} = props ?? {};
 
-          return  tokenRefreshCreate(data,requestOptions)
+          return  tokenRefreshCreate(refresh,data,requestOptions)
         }
 
         
@@ -162,14 +255,14 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type TokenRefreshCreateMutationResult = NonNullable<Awaited<ReturnType<typeof tokenRefreshCreate>>>
     export type TokenRefreshCreateMutationBody = BodyType<NonReadonly<TokenRefresh>>
-    export type TokenRefreshCreateMutationError = ErrorType<unknown>
+    export type TokenRefreshCreateMutationError = ErrorType<void>
 
-    export const useTokenRefreshCreate = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof tokenRefreshCreate>>, TError,{data: BodyType<NonReadonly<TokenRefresh>>}, TContext>, request?: SecondParameter<typeof customInstance>}
+    export const useTokenRefreshCreate = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof tokenRefreshCreate>>, TError,{refresh: string;data: BodyType<NonReadonly<TokenRefresh>>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof tokenRefreshCreate>>,
         TError,
-        {data: BodyType<NonReadonly<TokenRefresh>>},
+        {refresh: string;data: BodyType<NonReadonly<TokenRefresh>>},
         TContext
       > => {
 
