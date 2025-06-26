@@ -15,25 +15,55 @@ import json
 
 class WhoAmIViewTest(APITestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='password123')
-        
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='test@example.com',
+            first_name='Test',
+            last_name='User',
+            password='password123'
+        )
+        self.url = reverse('whoami')
         refresh = RefreshToken.for_user(self.user)
-        access_token = str(refresh.access_token)
+        self.access_token = str(refresh.access_token)
 
-        self.cookies = {
-            'access_token': access_token,
-            'refresh_token': str(refresh),
-        }
+    def test_whoami_without_authentication(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.data['detail'], 'Authentication credentials were not provided.')
 
-    def test_who_am_i(self):
-        url = reverse('whoami')
-        for cookie, value in self.cookies.items():
-            self.client.cookies[cookie] = value
+    def test_whoami_with_invalid_token(self):
+        self.client.cookies['access_token'] = 'invalid_token'
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 401)
 
-        response = self.client.get(url)
-        
+    def test_whoami_with_expired_token(self):
+        refresh = RefreshToken.for_user(self.user)
+        expired_token = refresh.access_token
+        expired_token.set_exp(lifetime=-timedelta(days=1))
+        self.client.cookies['access_token'] = str(expired_token)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 401)
+
+    def test_whoami_full_user_data(self):
+        response = self.client.get(self.url, HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['username'], self.user.username)
+        self.assertEqual(response.data['email'], self.user.email)
+        self.assertEqual(response.data['first_name'], self.user.first_name)
+        self.assertEqual(response.data['last_name'], self.user.last_name)
+
+    def test_whoami_with_header_authentication(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['username'], self.user.username)
+
+    def test_whoami_with_inactive_user(self):
+        self.user.is_active = False
+        self.user.save()
+        self.client.cookies['access_token'] = self.access_token
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 401)
         
 class UserSocialAuthTest(APITestCase):
     def setUp(self):
@@ -63,7 +93,7 @@ class OAuthRedirectTest(APITestCase):
         mock_set_tokens.return_value = JsonResponse({"message": "Tokens set successfully", 'code': '123abc'})
         response = self.client.get('/auth/callback/')
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, 'http://localhost:5173?code=123abc')
+        self.assertEqual(response.url, 'http://localhost:5173/auth/123abc')
         
 class CookieTokenRefreshViewTest(APITestCase):
     def setUp(self):
@@ -71,48 +101,33 @@ class CookieTokenRefreshViewTest(APITestCase):
         refresh = RefreshToken.for_user(self.user)
         self.refresh_token = str(refresh)
         self.access_token = str(refresh.access_token)
-        self.url = reverse('token_refresh')
-
+        self.url = '/token/refresh/'
     def test_successful_token_refresh(self):
-        self.client.cookies['refresh_token'] = self.refresh_token
-        response = self.client.post(self.url)
+        response = self.client.post(self.url + self.refresh_token)
         
-        self.assertEqual(response.status_code, 204)
-        self.assertIn('access_token', response.cookies)
-        self.assertIn('refresh_token', response.cookies)
-        self.assertTrue(response.cookies['access_token']['httponly'])
-        self.assertTrue(response.cookies['refresh_token']['httponly'])
-        self.assertEqual(response.cookies['access_token']['samesite'], 'Strict')
-        self.assertEqual(response.cookies['refresh_token']['samesite'], 'Strict')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('access_token', response.data)
+        self.assertIn('refresh_token', response.data)
+        self.assertNotEqual(response.data['access_token'], '')
+        self.assertNotEqual(response.data['refresh_token'], '')
 
     def test_missing_refresh_token(self):
         response = self.client.post(self.url)
-        self.assertEqual(response.status_code, 401)
-        self.assertEqual(response.data['detail'], 'Refresh token not found in cookies')
+        self.assertEqual(response.status_code, 404)
 
     def test_invalid_refresh_token(self):
-        self.client.cookies['refresh_token'] = 'invalid_token'
-        response = self.client.post(self.url)
+        response = self.client.post(self.url + 'invalid_token')
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.data['detail'], 'Invalid refresh token')
 
     def test_expired_refresh_token(self):
         expired_token = RefreshToken.for_user(self.user)
         expired_token.set_exp(lifetime=-timedelta(days=1))
-        self.client.cookies['refresh_token'] = str(expired_token)
         
-        response = self.client.post(self.url)
+        response = self.client.post(self.url + str(expired_token))
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.data['detail'], 'Invalid refresh token')
         
-    def test_token_refresh_cookie_attributes(self):
-        self.client.cookies['refresh_token'] = self.refresh_token
-        response = self.client.post(self.url)
-        
-        for cookie_name in ['access_token', 'refresh_token']:
-            self.assertTrue(response.cookies[cookie_name]['httponly'])
-            self.assertEqual(response.cookies[cookie_name]['samesite'], 'Strict')
-            self.assertNotEqual(response.cookies[cookie_name].value, '')
 class SetTokensViewTest(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='password123')

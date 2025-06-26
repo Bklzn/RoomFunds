@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, render
 from django.conf import settings
 from rest_framework.generics import GenericAPIView
 from core.serializers import ExpenseSerializer
-from user_auth.views import CookieJWTAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from core.models import Expense, Group
@@ -17,7 +17,7 @@ def login_view(request):
     request=ExpenseSerializer,
     responses=ExpenseSerializer(many=True))
 class ExpensesView(GenericAPIView):
-    authentication_classes = [CookieJWTAuthentication]
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = ExpenseSerializer
     queryset = Expense.objects.all()
@@ -44,7 +44,7 @@ class ExpensesView(GenericAPIView):
             return Response(serializer.errors, status=400)    
 @extend_schema(responses=ExpenseSerializer)    
 class ExpenseView(GenericAPIView):
-    authentication_classes = [CookieJWTAuthentication]
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = ExpenseSerializer
     queryset = Expense.objects.all()

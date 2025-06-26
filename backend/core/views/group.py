@@ -3,7 +3,7 @@ from rest_framework.generics import GenericAPIView
 from core.serializers import GroupSerializer
 from user_auth.serializers import UserSerializer
 from django.contrib.auth.models import User
-from user_auth.views import CookieJWTAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from core.models import Group
@@ -12,7 +12,7 @@ from drf_spectacular.utils import extend_schema
 
 @extend_schema(responses=GroupSerializer(many=True))
 class GroupsView(GenericAPIView):
-    authentication_classes = [CookieJWTAuthentication]
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = GroupSerializer
     queryset = Group.objects.all()
@@ -36,7 +36,7 @@ class GroupsView(GenericAPIView):
         
 @extend_schema(responses=GroupSerializer)
 class GroupView(GenericAPIView):
-    authentication_classes = [CookieJWTAuthentication]
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = GroupSerializer
     queryset = Group.objects.all()
@@ -78,7 +78,7 @@ class GroupView(GenericAPIView):
     
 @extend_schema(responses=UserSerializer(many=True))
 class GroupMemberView(GenericAPIView):
-    authentication_classes = [CookieJWTAuthentication]
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
     queryset = User.objects.all()

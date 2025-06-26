@@ -11,24 +11,24 @@ from rest_framework.exceptions import AuthenticationFailed
 
 from user_auth.serializers import UserSerializer
 from django.contrib.auth import logout
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from .models import LoginCode
 from django.utils import timezone
 from datetime import timedelta
 import json
 
-class CookieJWTAuthentication(JWTAuthentication):
-    def authenticate(self, request):
-        raw_token = request.COOKIES.get('access_token')
-        if raw_token is None:
-            return None
+# class CookieJWTAuthentication(JWTAuthentication):
+#     def authenticate(self, request):
+#         raw_token = request.COOKIES.get('access_token')
+#         if raw_token is None:
+#             return None
 
-        validated_token = self.get_validated_token(raw_token)
-        return self.get_user(validated_token), validated_token
+#         validated_token = self.get_validated_token(raw_token)
+#         return self.get_user(validated_token), validated_token
 
 @extend_schema(responses=UserSerializer)
 class WhoAmIView(APIView):
-    authentication_classes = [CookieJWTAuthentication]
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -47,7 +47,7 @@ def oauth_redirect(request):
     response: JsonResponse = set_tokens(request)
     if response.status_code > 199 and response.status_code < 300:
         code = json.loads(response.content)['code']
-        response_redirect = redirect('http://localhost:5173?code=' + str(code))
+        response_redirect = redirect('http://localhost:5173/auth/' + str(code))
         response_redirect.cookies = response.cookies
         return response_redirect
     else:
@@ -94,13 +94,32 @@ def get_client_ip(request):
         return xff.split(',')[0]
     return request.META.get('REMOTE_ADDR')
 
+@extend_schema(parameters=[
+    OpenApiParameter(
+        name='refresh',
+        description="Refresh token",
+        type=str,
+        location=OpenApiParameter.PATH,
+        required=True,
+        )], 
+        responses={
+            200: OpenApiResponse(
+                description="Returns new access and refresh tokens",
+                response={
+                    'type': 'object',
+                    'properties': {
+                        'access_token': {'type': 'string'},
+                        'refresh_token': {'type': 'string'},
+                    },
+                }
+            ),
+            401: OpenApiResponse(description="Invalid refresh token"),
+        },
+)
 class CookieTokenRefreshView(TokenRefreshView): 
-    def post(self, request, *args, **kwargs):
-        refresh_token = request.COOKIES.get('refresh_token')
-        if not refresh_token:
-            raise AuthenticationFailed('Refresh token not found in cookies')
-        
-        serializer = self.get_serializer(data={'refresh': refresh_token})
+    def post(self, request, refresh, *args, **kwargs):
+
+        serializer = self.get_serializer(data={'refresh': refresh})
         try:
             serializer.is_valid(raise_exception=True)
         except Exception as e:
@@ -109,13 +128,34 @@ class CookieTokenRefreshView(TokenRefreshView):
         access_token = serializer.validated_data['access']
         new_refresh_token = serializer.validated_data['refresh']
         
-        response = Response(status=status.HTTP_204_NO_CONTENT)
-        
-        response.set_cookie('access_token', str(access_token), httponly=True, samesite='Strict')
-        response.set_cookie('refresh_token', new_refresh_token, httponly=True, samesite='Strict')
-        
-        return response
+        return Response(
+            {'access_token': str(access_token), 'refresh_token': str(new_refresh_token)}
+            , status=200)
     
+@extend_schema(
+    parameters=[
+        OpenApiParameter(
+            name='code',
+            type=str,
+            location=OpenApiParameter.PATH,
+            description='One-time code to receive access and refresh tokens',
+            required=True,
+        )
+    ],
+    responses={
+        200: OpenApiResponse(
+            description="Returns access and refresh tokens",
+            response={
+                'type': 'object',
+                'properties': {
+                    'access_token': {'type': 'string'},
+                    'refresh_token': {'type': 'string'},
+                },
+            }
+        ),
+        401: OpenApiResponse(description="Invalid one-time code"),
+    },
+)
 class CodeExchangeView(APIView):
     def get(self, request, code):
         

@@ -1,7 +1,7 @@
 from django.http import Http404
 from rest_framework.generics import GenericAPIView
 from core.serializers import CategorySerializer
-from user_auth.views import CookieJWTAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from core.models import Category, Group
@@ -10,7 +10,7 @@ from drf_spectacular.utils import extend_schema
 
 @extend_schema(responses=CategorySerializer(many=True))
 class CategoriesView(GenericAPIView):
-    authentication_classes = [CookieJWTAuthentication]
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
