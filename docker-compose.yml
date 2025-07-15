@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: RoomFunds-backend
+    command: >
+      sh -c "
+        python manage.py migrate &&
+        python manage.py collectstatic --noinput &&
+        gunicorn RoomFunds.wsgi:application --bind 0.0.0.0:8000
+      "
+    volumes:
+      - ./backend/db.sqlite3:/app/db.sqlite3
+      - static_volume:/app/static
+    env_file:
+      - backend/.env
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+volumes:
+  static_volume:
