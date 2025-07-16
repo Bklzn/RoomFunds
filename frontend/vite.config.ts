@@ -8,10 +8,13 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react(), tailwindcss()],
     define: {
-      OAUTH_CLIENTID: new String(env.OAuth_ClientID),
-      BASE_URL: new String(env.baseUrl),
+      OAUTH_CLIENTID: JSON.stringify(env.OAuth_ClientID),
+      BASE_URL: JSON.stringify(env.baseUrl),
     },
     preview: {
+      allowedHosts: ["localhost", `${env.allowedHost}`],
+    },
+    server: {
       allowedHosts: ["localhost", `${env.allowedHost}`],
     },
   };
