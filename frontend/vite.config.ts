@@ -11,5 +11,8 @@ export default defineConfig(({ mode }) => {
       OAUTH_CLIENTID: new String(env.OAuth_ClientID),
       BASE_URL: new String(env.baseUrl),
     },
+    preview: {
+      allowedHosts: ["localhost", `${env.allowedHost}`],
+    },
   };
 });
