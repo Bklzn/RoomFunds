@@ -32,7 +32,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv("OAuth_Secret")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(";") if os.getenv("ALLOWED_HOSTS") else []
 
 
 # Application definition
@@ -191,10 +191,10 @@ SPECTACULAR_SETTINGS = {
 LOGIN_REDIRECT_URL = '/auth/callback'
 SOCIAL_AUTH_LOGIN_ERROR_URL = '/error'
 
-CORS_ALLOW_ALL_ORIGINS = True  
+# CORS_ALLOW_ALL_ORIGINS = True  
 # OR
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:5173",
-# ]
+CORS_ALLOWED_ORIGINS = [
+    os.getenv("CORS_ALLOWED_ORIGIN")
+]
 
 CORS_ALLOW_CREDENTIALS = True
