@@ -1,6 +1,13 @@
 FROM node:20-alpine
 
 WORKDIR /app
+
+ARG baseUrl
+ARG allowedHost
+
+ENV baseUrl=$baseUrl
+ENV allowedHost=$allowedHost
+
 COPY ./package*.json ./
 RUN npm ci
 
@@ -10,4 +17,4 @@ RUN npm run build
 
 EXPOSE 5173
 
-CMD ["npm", "run", "preview"]
+CMD ["npm", "run", "preview", "--", "--port=5173"]

@@ -8,7 +8,6 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react(), tailwindcss()],
     define: {
-      OAUTH_CLIENTID: JSON.stringify(env.OAuth_ClientID),
       BASE_URL: JSON.stringify(env.baseUrl),
     },
     preview: {
