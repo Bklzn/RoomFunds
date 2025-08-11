@@ -7,6 +7,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   return {
     plugins: [react(), tailwindcss()],
+    base: "/RoomFunds",
     define: {
       BASE_URL: JSON.stringify(env.baseUrl),
     },

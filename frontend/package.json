@@ -1,5 +1,6 @@
 {
   "name": "roomfunds",
+  "homepage": "htttps://Bklzn.github.io/RoomFunds",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,11 +9,14 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview --host",
-    "generate-api": "orval"
+    "generate-api": "orval",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@react-oauth/google": "^0.12.1",
     "axios": "^1.9.0",
+    "gh-pages": "^6.3.0",
     "jwt-decode": "^4.0.0",
     "react-dom": "^19.0.0"
   },
