@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import timedelta
+from urllib.parse import urlparse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -193,8 +194,9 @@ SOCIAL_AUTH_LOGIN_ERROR_URL = '/error'
 
 # CORS_ALLOW_ALL_ORIGINS = True  
 # OR
+url = urlparse(os.getenv("CORS_ALLOWED_ORIGIN"))
 CORS_ALLOWED_ORIGINS = [
-    os.getenv("CORS_ALLOWED_ORIGIN")
+    f'{url.scheme}://{url.netloc}'
 ]
 
 CORS_ALLOW_CREDENTIALS = True
