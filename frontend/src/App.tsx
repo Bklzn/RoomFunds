@@ -16,7 +16,7 @@ function App() {
   return (
     <Routes>
       <Route
-        path="/"
+        path="*"
         element={
           <GroupProvider>
             <div className="py-5 flex flex-row justify-between w-full">

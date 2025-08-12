@@ -16,6 +16,8 @@ from .models import LoginCode
 from django.utils import timezone
 from datetime import timedelta
 import json
+from django.conf import settings
+import os
 
 # class CookieJWTAuthentication(JWTAuthentication):
 #     def authenticate(self, request):
@@ -47,7 +49,8 @@ def oauth_redirect(request):
     response: JsonResponse = set_tokens(request)
     if response.status_code > 199 and response.status_code < 300:
         code = json.loads(response.content)['code']
-        response_redirect = redirect('http://localhost:5173/auth/' + str(code))
+        cors_allowed_origin = os.getenv("CORS_ALLOWED_ORIGIN")
+        response_redirect = redirect(f'{cors_allowed_origin}/#/auth/' + str(code))
         response_redirect.cookies = response.cookies
         return response_redirect
     else:

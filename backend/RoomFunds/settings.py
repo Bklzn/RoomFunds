@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import timedelta
+from urllib.parse import urlparse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,7 +33,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv("OAuth_Secret")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(";") if os.getenv("ALLOWED_HOSTS") else []
 
 
 # Application definition
@@ -191,10 +192,17 @@ SPECTACULAR_SETTINGS = {
 LOGIN_REDIRECT_URL = '/auth/callback'
 SOCIAL_AUTH_LOGIN_ERROR_URL = '/error'
 
-CORS_ALLOW_ALL_ORIGINS = True  
+# CORS_ALLOW_ALL_ORIGINS = True  
 # OR
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:5173",
-# ]
+url = urlparse(os.getenv("CORS_ALLOWED_ORIGIN"))
+CORS_ALLOWED_ORIGINS = [
+    f'{url.scheme}://{url.netloc}'
+]
 
 CORS_ALLOW_CREDENTIALS = True
+
+SESSION_COOKIE_SAMESITE = os.getenv("SESSION_COOKIE_SAMESITE")
+SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE","False").lower() in ('true', '1', 't')
+
+CSRF_COOKIE_SAMESITE = os.getenv("CSRF_COOKIE_SAMESITE")
+CSRF_COOKIE_SECURE = os.getenv("CSRF_COOKIE_SECURE","False").lower() in ('true', '1', 't')

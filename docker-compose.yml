@@ -5,12 +5,6 @@ services:
     build:
       context: ./backend
     container_name: RoomFunds-backend
-    command: >
-      sh -c "
-        python manage.py migrate &&
-        python manage.py collectstatic --noinput &&
-        gunicorn RoomFunds.wsgi:application --bind 0.0.0.0:8000
-      "
     volumes:
       - ./backend/db.sqlite3:/app/db.sqlite3
       - static_volume:/app/static
@@ -19,6 +13,16 @@ services:
     ports:
       - "8000:8000"
     restart: unless-stopped
+  frontend:
+    build:
+      context: ./frontend
+    container_name: RoomFunds-frontend
+    ports:
+      - "5173:5173"
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_started
 
 volumes:
   static_volume:
