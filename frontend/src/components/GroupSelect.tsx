@@ -10,11 +10,17 @@ import {
 } from "@mui/material";
 import { useApiGroupsList } from "../api/api/api";
 import { useGroup } from "../context/GroupContext";
+import { useNavigate } from "react-router-dom";
 
 const GroupSelect: React.FC = () => {
   const groups = useApiGroupsList();
   const { group, setGroup } = useGroup();
+  const navigate = useNavigate();
   const handleChange = (event: SelectChangeEvent) => {
+    if (event.target.value === "+newGroup+") {
+      navigate("/creategroup");
+      return;
+    }
     setGroup(event.target.value as string);
   };
 
@@ -49,6 +55,9 @@ const GroupSelect: React.FC = () => {
                   {g.name}
                 </MenuItem>
               ))}
+              <MenuItem key={"newGroup"} value={"+newGroup+"}>
+                + Create Group
+              </MenuItem>
             </Select>
           </>
         )}

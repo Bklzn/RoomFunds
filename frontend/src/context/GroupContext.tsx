@@ -11,6 +11,7 @@ import {
   useApiGroupUsersList,
 } from "../api/api/api";
 import { Category, User } from "../api/model";
+import { useNavigate } from "react-router-dom";
 
 interface GroupContextProps {
   group: string;
@@ -33,6 +34,7 @@ export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
   const [group, setGroup] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const navigate = useNavigate();
   const usersApi = useApiGroupUsersList(group, {
     query: {
       queryKey: ["users", group],
@@ -46,11 +48,15 @@ export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     if (groups.isSuccess) {
-      if (!storage || !groups.data.some((g) => g.name === storage)) {
-        setGroup(groups.data[0].name);
-        localStorage.setItem("selectedGroup", groups.data[0].name);
+      if (groups.data.length) {
+        if (!storage || !groups.data.some((g) => g.name === storage)) {
+          setGroup(groups.data[0].name);
+          localStorage.setItem("selectedGroup", groups.data[0].name);
+        } else {
+          setGroup(storage);
+        }
       } else {
-        setGroup(storage);
+        navigate("creategroup");
       }
     }
     if (categoriesApi.isSuccess) setCategories(categoriesApi.data);
@@ -58,6 +64,7 @@ export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [groups.data, groups, storage, categoriesApi, usersApi]);
 
   const setGroupManually = (value: SetStateAction<string>) => {
+    console.log(value);
     setGroup(value);
     localStorage.setItem("selectedGroup", value.toString());
   };

@@ -11,6 +11,7 @@ import UserBalance from "./components/UserBalance";
 import { Route, Routes } from "react-router-dom";
 import AuthCodeExchange from "./pages/AuthCodeExchange";
 import { GroupProvider } from "./context/GroupContext";
+import CreateGroup from "./pages/CreateGroup";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         }
       />
       <Route path="/auth/:code" element={<AuthCodeExchange />} />
+      <Route path="/creategroup" element={<CreateGroup />} />
     </Routes>
   );
 }

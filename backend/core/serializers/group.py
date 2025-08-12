@@ -21,7 +21,7 @@ class GroupSerializer(serializers.ModelSerializer):
             
     def validate_name(self, value):
         owner = self.context['request'].user
-        if Group.objects.filter(owner=owner, name=value).exists():
+        if Group.objects.filter(members=owner, name=value).exists():
             raise serializers.ValidationError('Group with this name already exists')
         return value
     
