@@ -61,10 +61,9 @@ export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
     }
     if (categoriesApi.isSuccess) setCategories(categoriesApi.data);
     if (usersApi.isSuccess) setUsers(usersApi.data);
-  }, [groups.data, groups, storage, categoriesApi, usersApi]);
+  }, [groups.data, groups, storage, categoriesApi, usersApi, navigate]);
 
   const setGroupManually = (value: SetStateAction<string>) => {
-    console.log(value);
     setGroup(value);
     localStorage.setItem("selectedGroup", value.toString());
   };

@@ -31,7 +31,10 @@ const modalStyles = {
   p: 4,
 };
 
-type FormProps = Omit<Expense, "user" | "category_display" | "group">;
+type FormProps = Omit<
+  Expense,
+  "user" | "category_display" | "category" | "group"
+> & { category_input: string };
 
 const ExpenseAddForm: React.FC = () => {
   const [open, setOpen] = useState(false);
@@ -47,7 +50,12 @@ const ExpenseAddForm: React.FC = () => {
     formState: { errors },
     setError,
   } = useForm<FormProps>({
-    defaultValues: { amount: "", description: "", category: "", date: "" },
+    defaultValues: {
+      amount: "",
+      description: "",
+      category_input: "",
+      date: "",
+    },
   });
   const categories = useApiGroupCategoriesList(group, {
     query: {
@@ -68,16 +76,16 @@ const ExpenseAddForm: React.FC = () => {
   };
   const onSubmit: SubmitHandler<FormProps> = async (data) => {
     if (categoryValue === null) {
-      if (data.category === "") {
+      if (data.category_input === "") {
         console.error("Category is not selected");
-        setError("category", {
+        setError("category_input", {
           type: "manual",
           message: "Category is not selected",
         });
         return;
       }
       const isNewCategory = !categories.data?.some(
-        (c) => c.name === data.category
+        (c) => c.name === data.category_input
       );
 
       if (isNewCategory) {
@@ -152,7 +160,7 @@ const ExpenseAddForm: React.FC = () => {
                     freeSolo
                     className="flex-3"
                     options={categories.data!.map((c) => c.name)}
-                    value={getValues("category")}
+                    value={getValues("category_input")}
                     // error={!!errors.date}
                     // helperText={errors.date ? errors.date?.message : ""}
                     onChange={(_e, v) => {
@@ -161,18 +169,20 @@ const ExpenseAddForm: React.FC = () => {
                     onInputChange={(_e, v, r) => {
                       if (r === "clear") {
                         setCategoryValue(null);
-                        setValue("category", "");
+                        setValue("category_input", "");
                         return;
                       }
-                      setValue("category", v);
+                      setValue("category_input", v);
                     }}
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        {...register("category")}
+                        {...register("category_input")}
                         label="Category"
-                        error={!!errors.category}
-                        helperText={errors.date ? errors.category?.message : ""}
+                        error={!!errors.category_input}
+                        helperText={
+                          errors.date ? errors.category_input?.message : ""
+                        }
                       />
                     )}
                   />
@@ -204,7 +214,7 @@ const ExpenseAddForm: React.FC = () => {
             </Button>
           </form>
           <CategoryAddModal
-            categoryName={getValues("category")}
+            categoryName={getValues("category_input")}
             open={childOpen}
             setOpen={setChildOpen}
             resolveRef={modalResolveRef}
