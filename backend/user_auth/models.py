@@ -10,7 +10,7 @@ class LoginCode(models.Model):
     access_token = models.TextField(default='', blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     expires_at = models.DateTimeField(default=timezone.now)
-    user_agent = models.CharField(blank=True)
+    user_agent = models.CharField(blank=True, max_length=255)
     ip_address = models.GenericIPAddressField(blank=True, null=True)
     
     def __str__(self):
