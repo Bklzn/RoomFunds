@@ -5,6 +5,9 @@ import { useTokenExchangeRetrieve } from "../api/token/token";
 const AuthCodeExchange: React.FC = () => {
   const navigate = useNavigate();
   const { code } = useParams();
+
+  // due the incepretor configuration, this particular request cannot be used with configured headers
+  // exepction has been handled in ../api/client.ts:34
   const api = useTokenExchangeRetrieve(code ?? "");
 
   useEffect(() => {

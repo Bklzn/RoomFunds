@@ -31,7 +31,7 @@ function processQueue(error: unknown, ok: boolean): void {
 
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem("access_token");
-  if (token) {
+  if (token && !config.url?.includes("exchange")) {
     config.headers = config.headers || {};
     config.headers["Authorization"] = `Bearer ${token}`;
   }
