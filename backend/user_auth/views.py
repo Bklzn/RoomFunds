@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect
+from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework import status
@@ -10,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import AuthenticationFailed
 
 from user_auth.serializers import UserSerializer
-from django.contrib.auth import logout
+from django.contrib.auth import logout, login
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
 from .models import LoginCode
 from django.utils import timezone
@@ -27,6 +28,12 @@ import os
 
 #         validated_token = self.get_validated_token(raw_token)
 #         return self.get_user(validated_token), validated_token
+
+def guest_login(request):
+    guest_user = User.objects.get(username="Guest")
+    guest_user.backend = "django.contrib.auth.backends.ModelBackend"
+    login(request, guest_user)
+    return oauth_redirect(request)
 
 @extend_schema(responses=UserSerializer)
 class WhoAmIView(APIView):

@@ -8,5 +8,6 @@
   </head>
   <body>
     <a href="{% url "social:begin" "google-oauth2" %}?next={{ redirect_uri }}"><button>Login</button></a>
+    <a href="{% url 'guest-login' %}"><button>Login as Guest</button></a>
   </body>
 </html>

@@ -8,6 +8,7 @@ urlpatterns = [
     path('token/refresh/<str:refresh>', views.CookieTokenRefreshView.as_view(), name='token_refresh'),
     path('token/exchange/<str:code>', views.CodeExchangeView.as_view(), name='token_exchange'),
     path('auth/callback/', views.oauth_redirect, name='callback'),
+    path('guest-login/', views.guest_login, name='guest-login'),
     path('logout/', views.logout_view, name='logout'),
     path('whoami/', views.WhoAmIView.as_view(), name='whoami'),
 ]
