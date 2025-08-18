@@ -6,7 +6,6 @@ services:
       context: ./backend
     container_name: RoomFunds-backend
     volumes:
-      - ./backend/db.sqlite3:/app/db.sqlite3
       - static_volume:/app/static
     env_file:
       - backend/.env
