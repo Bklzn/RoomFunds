@@ -7,11 +7,16 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from core.models import Expense, Group
+from django.contrib.auth import logout
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiParameter
+from django.views.decorators.cache import never_cache
 
+@never_cache
 def login_view(request):
-    redirect_uri = settings.LOGIN_REDIRECT_URL
-    return render(request, 'login.html', {'redirect_uri': redirect_uri})
+    request.session.pop('partial_pipeline', None)
+    if request.user.is_authenticated:
+        logout(request)
+    return render(request, 'login.html', {'redirect_uri': settings.LOGIN_REDIRECT_URL})
 
 @extend_schema(
     request=ExpenseSerializer,
