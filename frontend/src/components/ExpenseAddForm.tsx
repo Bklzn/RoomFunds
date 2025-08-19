@@ -130,7 +130,7 @@ const ExpenseAddForm: React.FC = () => {
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box sx={modalStyles}>
           <Typography variant="h6" component="h2" mb={2}>
-            Formularz
+            Add new expense
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-row gap-4 flex-wrap">
@@ -145,6 +145,7 @@ const ExpenseAddForm: React.FC = () => {
                 {...register("amount")}
                 label="Amount"
                 type="number"
+                slotProps={{ htmlInput: { step: 0.01 } }}
                 className="flex-3"
                 error={!!errors.amount}
                 helperText={errors.date ? errors.amount?.message : ""}
