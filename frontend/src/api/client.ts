@@ -59,24 +59,20 @@ axiosInstance.interceptors.response.use(
 
       try {
         const refresh = localStorage.getItem("refresh_token");
-        if (!refresh) throw new Error("No refresh token");
-
-        const res = await axiosInstance.post(`/token/refresh/${refresh}`);
-
-        if (res.status === 200) {
-          localStorage.setItem("access_token", res.data.access_token);
-          localStorage.setItem("refresh_token", res.data.refresh_token);
-          originalRequest.headers[
-            "Authorization"
-          ] = `Bearer ${res.data.access_token}`;
-        } else {
-          throw new Error("Refresh token is invalid");
-        }
+        const res = await axios.post(`${BASE_URL}/token/refresh/${refresh}`);
+        localStorage.setItem("access_token", res.data.access_token);
+        localStorage.setItem("refresh_token", res.data.refresh_token);
+        originalRequest.headers[
+          "Authorization"
+        ] = `Bearer ${res.data.access_token}`;
         processQueue(null, true);
         return axiosInstance(originalRequest);
       } catch (err) {
-        processQueue(err, false);
-        return Promise.reject(err);
+        window.location.href = BASE_URL;
+        if (err instanceof Error) {
+          throw new Error(err.message);
+        }
+        throw new Error("Failed to refresh token");
       } finally {
         isRefreshing = false;
       }

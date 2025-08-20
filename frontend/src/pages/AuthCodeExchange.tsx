@@ -12,7 +12,7 @@ const AuthCodeExchange: React.FC = () => {
 
   useEffect(() => {
     if (!code) {
-      navigate("/login");
+      navigate("/logout");
       return;
     }
     if (api.isSuccess) {
@@ -21,7 +21,7 @@ const AuthCodeExchange: React.FC = () => {
       navigate("/");
     }
     if (api.isError) {
-      navigate("/login");
+      navigate("/logout");
     }
   }, [code, navigate, api]);
 

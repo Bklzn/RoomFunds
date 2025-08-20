@@ -12,6 +12,7 @@ import { Route, Routes } from "react-router-dom";
 import AuthCodeExchange from "./pages/AuthCodeExchange";
 import { GroupProvider } from "./context/GroupContext";
 import CreateGroup from "./pages/CreateGroup";
+import LogoutRedirect from "./pages/LogoutRedirect";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
       />
       <Route path="/auth/:code" element={<AuthCodeExchange />} />
       <Route path="/creategroup" element={<CreateGroup />} />
+      <Route path="/logout" element={<LogoutRedirect />} />
     </Routes>
   );
 }
