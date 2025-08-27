@@ -10,12 +10,12 @@ import {
 import { useGroup } from "../context/GroupContext";
 import { User as UserApi } from "../api/model";
 
-interface Props {
+interface Props extends BoxProps {
   userId: string;
   variant?: "avatar" | "hover" | "all";
-  boxProps?: BoxProps;
 }
-const User: React.FC<Props> = ({ userId, variant = "all", boxProps }) => {
+
+const User: React.FC<Props> = ({ userId, variant = "all", ...boxProps }) => {
   const { users } = useGroup();
 
   const user = users.find((user) => String(user.id) == userId);
@@ -74,7 +74,7 @@ const UserAvatar: React.FC<{ src: string; alt: string }> = ({ src, alt }) => (
     sx={{
       width: "100%",
       height: "100%",
-      minWidth: "20px",
+      minWidth: "30px",
       aspectRatio: "1/1",
       position: "relative",
       bgcolor: "error.light",
@@ -90,8 +90,7 @@ const UserAvatar: React.FC<{ src: string; alt: string }> = ({ src, alt }) => (
 );
 
 const UserAllInfo: React.FC<{ user: UserApi }> = ({ user }) => (
-  <Paper
-    elevation={3}
+  <Box
     sx={{
       p: 2,
       display: "flex",
@@ -111,7 +110,7 @@ const UserAllInfo: React.FC<{ user: UserApi }> = ({ user }) => (
         {user.email}
       </Typography>
     </Box>
-  </Paper>
+  </Box>
 );
 
 const NoUserError: React.FC = () => (

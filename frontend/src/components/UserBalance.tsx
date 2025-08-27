@@ -10,8 +10,20 @@ const UserBalance: React.FC = () => {
   const user = useWhoamiRetrieve();
 
   return (
-    <Paper elevation={3} sx={{ px: 4, py: 2, textAlign: "center" }}>
-      <Typography variant="h5">Your Balance</Typography>
+    <Paper
+      elevation={3}
+      sx={{
+        px: 1,
+        py: 1,
+        pr: 3,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
+    >
+      <Typography variant="caption" color="text.secondary">
+        Your balance:
+      </Typography>
       {expenses.isLoading || user.isLoading || users.isLoading ? (
         <Skeleton variant="rectangular" width={100} height={20} />
       ) : expenses.isError || user.isError || users.isError ? (
@@ -34,7 +46,7 @@ const UserBalance: React.FC = () => {
           const balance = sharePerUser - userAmount;
           return (
             <Typography
-              variant="h4"
+              variant="h5"
               sx={{
                 color:
                   balance > 0
@@ -44,7 +56,7 @@ const UserBalance: React.FC = () => {
                     : "white",
               }}
             >
-              {balance}
+              {balance.toFixed(2)}
             </Typography>
           );
         })()

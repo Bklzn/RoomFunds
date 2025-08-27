@@ -1,30 +1,31 @@
-import { Box, Paper, Skeleton } from "@mui/material";
+import { BoxProps, Skeleton, Stack } from "@mui/material";
 import { useWhoamiRetrieve } from "../api/whoami/whoami";
 import User from "./User";
 
-const WhoamiContainer: React.FC = () => {
+interface Props extends BoxProps {
+  variant?: "avatar" | "hover" | "all";
+}
+
+const WhoamiContainer: React.FC<Props> = ({ variant = "all", ...boxProps }) => {
   const user = useWhoamiRetrieve();
   if (user.isLoading) {
     return (
-      <Paper
-        elevation={3}
-        sx={{
-          p: 2,
-          display: "flex",
-          alignItems: "center",
-          gap: 2,
-          maxWidth: 400,
-        }}
-      >
+      <Stack direction="row" spacing={3} sx={{ m: 2 }}>
         <Skeleton variant="circular" width={56} height={56} />
-        <Box>
-          <Skeleton variant="text" width={120} height={24} />
-          <Skeleton variant="text" width={180} height={20} />
-        </Box>
-      </Paper>
+        <Stack direction="column">
+          <Skeleton variant="text" width={110} height={24} />
+          <Skeleton variant="text" width={150} height={20} />
+        </Stack>
+      </Stack>
     );
   }
-  return <User userId={user.data?.id ? String(user.data?.id) : "no-id"} />;
+  return (
+    <User
+      variant={variant}
+      userId={user.data?.id ? String(user.data?.id) : "no-id"}
+      {...boxProps}
+    />
+  );
 };
 
 export default WhoamiContainer;

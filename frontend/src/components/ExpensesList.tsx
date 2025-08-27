@@ -53,9 +53,7 @@ const ExpensesList: React.FC = () => {
                   <User
                     variant="hover"
                     userId={row.user}
-                    boxProps={{
-                      sx: { width: 30, marginLeft: "auto" },
-                    }}
+                    sx={{ width: 30, marginLeft: "auto" }}
                   />
                 </TableCell>
               </TableRow>
