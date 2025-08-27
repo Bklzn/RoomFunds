@@ -1,10 +1,12 @@
 import {
   Autocomplete,
   Box,
+  BoxProps,
   Button,
   Modal,
   Skeleton,
   Stack,
+  SxProps,
   TextareaAutosize,
   TextField,
   Typography,
@@ -19,8 +21,9 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useGroup } from "../context/GroupContext";
 import { Expense } from "../api/model";
 import { useQueryClient } from "@tanstack/react-query";
+import { AddCircle } from "@mui/icons-material";
 
-const modalStyles = {
+const modalStyles: SxProps = {
   position: "absolute",
   top: "50%",
   left: "50%",
@@ -29,6 +32,7 @@ const modalStyles = {
   borderRadius: 2,
   boxShadow: 24,
   p: 4,
+  maxHeight: "80vh",
 };
 
 type FormProps = Omit<
@@ -36,7 +40,7 @@ type FormProps = Omit<
   "user" | "category_display" | "category" | "group"
 > & { category_input: string };
 
-const ExpenseAddForm: React.FC = () => {
+const ExpenseAddForm: React.FC<BoxProps> = (props) => {
   const [open, setOpen] = useState(false);
   const [childOpen, setChildOpen] = useState(false);
   const [isDescShowed, setIsDescShowed] = useState(false);
@@ -49,6 +53,7 @@ const ExpenseAddForm: React.FC = () => {
     setValue,
     formState: { errors },
     setError,
+    clearErrors,
   } = useForm<FormProps>({
     defaultValues: {
       amount: "",
@@ -118,14 +123,17 @@ const ExpenseAddForm: React.FC = () => {
       );
   };
   return (
-    <>
+    <Box {...props}>
       <Button
         variant="contained"
+        sx={{ m: "auto" }}
         onClick={() => {
           setOpen(true);
+          clearErrors();
         }}
+        endIcon={<AddCircle />}
       >
-        Add new expenses
+        Add expenses
       </Button>
       <Modal open={open} onClose={() => setOpen(false)}>
         <Box sx={modalStyles}>
@@ -206,11 +214,13 @@ const ExpenseAddForm: React.FC = () => {
                 border: "1px solid #ccc",
                 borderRadius: 4,
                 marginTop: 20,
+                maxHeight: "50vh",
               }}
               minRows={3}
+              maxRows={10}
               {...register("description")}
             />
-            <Button type="submit" variant="contained" sx={{ mt: 2 }}>
+            <Button type="submit" variant="contained" sx={{ mt: 2, px: 4 }}>
               Save
             </Button>
           </form>
@@ -222,7 +232,7 @@ const ExpenseAddForm: React.FC = () => {
           />
         </Box>
       </Modal>
-    </>
+    </Box>
   );
 };
 const CategoryAddModal: React.FC<{
