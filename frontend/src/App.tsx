@@ -9,20 +9,19 @@ import UserBalance from "./components/UserBalance";
 import { Route, Routes } from "react-router-dom";
 import AuthCodeExchange from "./pages/AuthCodeExchange";
 import { GroupProvider } from "./context/GroupContext";
-import CreateGroup from "./pages/CreateGroup";
 import LogoutRedirect from "./pages/LogoutRedirect";
 import { Box, Paper } from "@mui/material";
 import Sidebar from "./components/Sidebar/Sidebar";
 
 function App() {
   return (
-    <Routes>
-      <Route
-        path="*"
-        element={
-          <GroupProvider>
-            <Box sx={{ display: "flex", height: "100vh" }}>
-              <Sidebar />
+    <Box sx={{ display: "flex", height: "100vh" }}>
+      <Sidebar />
+      <Routes>
+        <Route
+          path="*"
+          element={
+            <GroupProvider>
               <Paper
                 sx={{
                   flexGrow: 1,
@@ -40,14 +39,13 @@ function App() {
                   <ExpensesList />
                 </div>
               </Paper>
-            </Box>
-          </GroupProvider>
-        }
-      />
-      <Route path="/auth/:code" element={<AuthCodeExchange />} />
-      <Route path="/creategroup" element={<CreateGroup />} />
-      <Route path="/logout" element={<LogoutRedirect />} />
-    </Routes>
+            </GroupProvider>
+          }
+        />
+        <Route path="/auth/:code" element={<AuthCodeExchange />} />
+        <Route path="/logout" element={<LogoutRedirect />} />
+      </Routes>
+    </Box>
   );
 }
 export default App;

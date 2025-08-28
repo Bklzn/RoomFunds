@@ -38,36 +38,48 @@ const User: React.FC<Props> = ({ userId, variant = "all", ...boxProps }) => {
   }
 
   if (variant === "hover")
-    return (
-      <Tooltip
-        title={user ? <UserAllInfo user={user} /> : <NoUserError />}
-        slots={{
-          transition: Zoom,
-        }}
-        placement="left"
-        slotProps={{
-          tooltip: {
-            style: {
-              background: "none",
-              margin: 0,
-            },
-          },
-        }}
-      >
-        <Box {...boxProps}>
-          <UserAvatar
-            src={user?.avatar || "no-user.png"}
-            alt={user?.display || "No-user"}
-          />
-        </Box>
-      </Tooltip>
+    return user ? (
+      <UserHover user={user} boxProps={boxProps} />
+    ) : (
+      <NoUserError />
     );
 
   if (variant === "all")
     return user ? <UserAllInfo user={user} /> : <NoUserError />;
 };
 
-const UserAvatar: React.FC<{ src: string; alt: string }> = ({ src, alt }) => (
+export const UserHover: React.FC<{ user: UserApi; boxProps: BoxProps }> = ({
+  user,
+  boxProps,
+}) => (
+  <Tooltip
+    title={user ? <UserAllInfo user={user} /> : <NoUserError />}
+    slots={{
+      transition: Zoom,
+    }}
+    placement="left"
+    slotProps={{
+      tooltip: {
+        style: {
+          background: "none",
+          margin: 0,
+        },
+      },
+    }}
+  >
+    <Box {...boxProps}>
+      <UserAvatar
+        src={user?.avatar || "no-user.png"}
+        alt={user?.display || "No-user"}
+      />
+    </Box>
+  </Tooltip>
+);
+
+export const UserAvatar: React.FC<{ src: string; alt: string }> = ({
+  src,
+  alt,
+}) => (
   <Avatar
     src={src}
     alt={alt}
@@ -89,7 +101,7 @@ const UserAvatar: React.FC<{ src: string; alt: string }> = ({ src, alt }) => (
   />
 );
 
-const UserAllInfo: React.FC<{ user: UserApi }> = ({ user }) => (
+export const UserAllInfo: React.FC<{ user: UserApi }> = ({ user }) => (
   <Box
     sx={{
       p: 2,
@@ -113,7 +125,7 @@ const UserAllInfo: React.FC<{ user: UserApi }> = ({ user }) => (
   </Box>
 );
 
-const NoUserError: React.FC = () => (
+export const NoUserError: React.FC = () => (
   <Paper
     elevation={3}
     sx={{

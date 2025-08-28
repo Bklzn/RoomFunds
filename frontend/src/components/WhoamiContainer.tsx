@@ -1,9 +1,9 @@
 import { BoxProps, Skeleton, Stack } from "@mui/material";
 import { useWhoamiRetrieve } from "../api/whoami/whoami";
-import User from "./User";
+import { NoUserError, UserAllInfo, UserHover } from "./User";
 
 interface Props extends BoxProps {
-  variant?: "avatar" | "hover" | "all";
+  variant?: "all" | "hover";
 }
 
 const WhoamiContainer: React.FC<Props> = ({ variant = "all", ...boxProps }) => {
@@ -19,13 +19,13 @@ const WhoamiContainer: React.FC<Props> = ({ variant = "all", ...boxProps }) => {
       </Stack>
     );
   }
-  return (
-    <User
-      variant={variant}
-      userId={user.data?.id ? String(user.data?.id) : "no-id"}
-      {...boxProps}
-    />
-  );
+  if (user.isError) {
+    return <NoUserError />;
+  }
+  if (variant === "hover") {
+    return <UserHover user={user.data!} boxProps={boxProps} />;
+  }
+  return <UserAllInfo user={user.data!} {...boxProps} />;
 };
 
 export default WhoamiContainer;
