@@ -63,7 +63,7 @@ const LoadingGroupSelect: React.FC = (props: PaperProps) => {
 };
 
 const SuccessGroupSelect: React.FC = (props: PaperProps) => {
-  const groups = useApiGroupsList();
+  const groups = useApiGroupsList({ query: { queryKey: ["groups"] } });
   const { group, setGroup } = useGroup();
   const { sx, ...rest } = props;
   return (

@@ -35,7 +35,7 @@ const GroupContext = createContext<GroupContextProps>(contextDefaults);
 export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const groups = useApiGroupsList();
+  const groups = useApiGroupsList({ query: { queryKey: ["groups"] } });
 
   if (groups.isError) {
     return (

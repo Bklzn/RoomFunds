@@ -17,6 +17,7 @@ import { Group } from "../api/model";
 import { Add } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { useGroup } from "../context/GroupContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 type FormProps = Omit<Group, "owner" | "moderators" | "members">;
 const CreateGroupModal: React.FC<{
@@ -35,6 +36,7 @@ const CreateGroupModal: React.FC<{
   } = useForm<FormProps>({
     defaultValues: { name: "", description: "" },
   });
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (state === "empty") {
@@ -45,7 +47,11 @@ const CreateGroupModal: React.FC<{
   const onSubmit = async () => {
     const { name, description } = getValues();
     await apiGroupsCreate({ name, description }).then(
-      () => setGroup(name),
+      () => {
+        setGroup(name);
+        setOpen(false);
+        queryClient.invalidateQueries({ queryKey: ["groups"] });
+      },
       (err) => {
         console.error(err);
         Object.keys(err.response?.data).forEach((key) => {
