@@ -3,9 +3,7 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-import GroupSelect from "./components/GroupSelect";
 import ExpensesList from "./components/ExpensesList";
-import UserBalance from "./components/UserBalance";
 import { Route, Routes } from "react-router-dom";
 import AuthCodeExchange from "./pages/AuthCodeExchange";
 import { GroupProvider } from "./context/GroupContext";
@@ -17,34 +15,31 @@ function App() {
   return (
     <Box sx={{ display: "flex", height: "100vh" }}>
       <Sidebar />
-      <Routes>
-        <Route
-          path="*"
-          element={
-            <GroupProvider>
-              <Paper
-                sx={{
-                  flexGrow: 1,
-                  py: 1,
-                  px: 3,
-                }}
-                component={"main"}
-                elevation={3}
-              >
-                <Box sx={{ display: "flex", pb: 2, gap: 1 }}>
-                  <GroupSelect />
-                  <UserBalance />
-                </Box>
+      <Paper
+        sx={{
+          flexGrow: 1,
+          py: 1,
+          px: 3,
+          position: "relative",
+        }}
+        component={"main"}
+        elevation={3}
+      >
+        <Routes>
+          <Route
+            path="*"
+            element={
+              <GroupProvider>
                 <div className="w-full">
                   <ExpensesList />
                 </div>
-              </Paper>
-            </GroupProvider>
-          }
-        />
-        <Route path="/auth/:code" element={<AuthCodeExchange />} />
-        <Route path="/logout" element={<LogoutRedirect />} />
-      </Routes>
+              </GroupProvider>
+            }
+          />
+          <Route path="/auth/:code" element={<AuthCodeExchange />} />
+          <Route path="/logout" element={<LogoutRedirect />} />
+        </Routes>
+      </Paper>
     </Box>
   );
 }

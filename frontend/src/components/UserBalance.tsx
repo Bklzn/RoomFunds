@@ -1,13 +1,63 @@
-import { Paper, Skeleton, Typography } from "@mui/material";
+import { CircularProgress, Paper, Typography } from "@mui/material";
 import { useApiExpensesList, useApiGroupUsersList } from "../api/api/api";
 import { useGroup } from "../context/GroupContext";
 import { useWhoamiRetrieve } from "../api/whoami/whoami";
 
 const UserBalance: React.FC = () => {
+  const { state } = useGroup();
+
+  if (state === "loading") return <BalanceLoading />;
+
+  if (state === "error" || state === "empty") return <BalanceError />;
+
+  return <BalanceSuccess />;
+};
+
+const BalanceLoading: React.FC = () => (
+  <Paper
+    elevation={3}
+    sx={{
+      px: 1,
+      py: 1,
+      pr: 3,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+    }}
+  >
+    <Typography variant="caption" color="text.secondary">
+      Your balance:
+    </Typography>
+    <CircularProgress size={25} color="inherit" />
+  </Paper>
+);
+
+const BalanceError: React.FC = () => (
+  <Paper
+    elevation={3}
+    sx={{
+      px: 1,
+      py: 1,
+      pr: 3,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+    }}
+  >
+    <Typography variant="caption" color="text.secondary">
+      Your balance:
+    </Typography>
+    <Typography variant="h5">---</Typography>
+  </Paper>
+);
+
+const BalanceSuccess: React.FC = () => {
   const { group } = useGroup();
   const expenses = useApiExpensesList({ groupName: group });
   const users = useApiGroupUsersList(group);
   const user = useWhoamiRetrieve();
+
+  if (!expenses.data || !users.data || !user.data) return <BalanceLoading />;
 
   return (
     <Paper
@@ -24,9 +74,7 @@ const UserBalance: React.FC = () => {
       <Typography variant="caption" color="text.secondary">
         Your balance:
       </Typography>
-      {expenses.isLoading || user.isLoading || users.isLoading ? (
-        <Skeleton variant="rectangular" width={100} height={20} />
-      ) : expenses.isError || user.isError || users.isError ? (
+      {expenses.isError || user.isError || users.isError ? (
         <Typography variant="body1" sx={{ color: "error.light" }}>
           {JSON.stringify(expenses.error?.response?.data) ||
             JSON.stringify(user.error?.response?.data) ||

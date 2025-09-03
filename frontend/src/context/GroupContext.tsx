@@ -10,31 +10,88 @@ import {
   useApiGroupsList,
   useApiGroupUsersList,
 } from "../api/api/api";
-import { Category, User } from "../api/model";
-import { useNavigate } from "react-router-dom";
+import { Category, Group, User } from "../api/model";
+import NoGroupsHandler from "../components/NoGroupsHandler";
+import GroupBasics from "../components/GroupBasics";
+import { CircularProgress } from "@mui/material";
 
 interface GroupContextProps {
   group: string;
   setGroup: (value: SetStateAction<string>) => void;
   categories: Category[];
   users: User[];
+  state: "loading" | "success" | "error" | "empty";
 }
 
-const GroupContext = createContext<GroupContextProps>({
+const contextDefaults: GroupContextProps = {
   group: "",
   setGroup: () => {},
   categories: [],
   users: [],
-});
+  state: "loading",
+};
+
+const GroupContext = createContext<GroupContextProps>(contextDefaults);
 export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const groups = useApiGroupsList();
+
+  if (groups.isError) {
+    return (
+      <GroupContext.Provider value={{ ...contextDefaults, state: "error" }}>
+        <GroupBasics />
+        {groups.error.message}
+      </GroupContext.Provider>
+    );
+  }
+  if (groups.isLoading) {
+    return (
+      <GroupContext.Provider value={{ ...contextDefaults, state: "loading" }}>
+        <GroupBasics />
+        <CircularProgress
+          color="inherit"
+          size={50}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        />
+      </GroupContext.Provider>
+    );
+  }
+  if (groups.isSuccess) {
+    if (!groups.data.length) {
+      return (
+        <GroupContext.Provider value={{ ...contextDefaults, state: "empty" }}>
+          <GroupBasics />
+          <NoGroupsHandler />
+        </GroupContext.Provider>
+      );
+    }
+    return (
+      <GroupsProvider
+        groups={groups.data}
+        state={groups.data.length ? "success" : "error"}
+      >
+        <GroupBasics />
+        {children}
+      </GroupsProvider>
+    );
+  }
+};
+
+const GroupsProvider: React.FC<{
+  children: React.ReactNode;
+  groups: Group[];
+  state: GroupContextProps["state"];
+}> = ({ children, groups }) => {
   const storage = localStorage.getItem("selectedGroup");
   const [group, setGroup] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-  const navigate = useNavigate();
   const usersApi = useApiGroupUsersList(group, {
     query: {
       queryKey: ["users", group],
@@ -46,43 +103,84 @@ export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
     },
   });
 
-  useEffect(() => {
-    if (groups.isSuccess) {
-      if (groups.data.length) {
-        if (!storage || !groups.data.some((g) => g.name === storage)) {
-          setGroup(groups.data[0].name);
-          localStorage.setItem("selectedGroup", groups.data[0].name);
-        } else {
-          setGroup(storage);
-        }
-      } else {
-        navigate("creategroup");
-      }
-    }
-    if (categoriesApi.isSuccess) setCategories(categoriesApi.data);
-    if (usersApi.isSuccess) setUsers(usersApi.data);
-  }, [groups.data, groups, storage, categoriesApi, usersApi, navigate]);
-
   const setGroupManually = (value: SetStateAction<string>) => {
     setGroup(value);
     localStorage.setItem("selectedGroup", value.toString());
   };
 
-  if (groups.isError) {
-    return <>{groups.error}</>;
-  }
-  if (groups.isLoading || !group) {
-    return <>loading</>;
-  }
-  if (groups.isSuccess) {
+  useEffect(() => {
+    if (!storage || !groups.some((g) => g.name === storage)) {
+      setGroup(groups[0].name);
+      localStorage.setItem("selectedGroup", groups[0].name);
+    } else {
+      setGroup(storage);
+    }
+    if (categoriesApi.isSuccess) setCategories(categoriesApi.data);
+    if (usersApi.isSuccess) setUsers(usersApi.data);
+  }, [
+    categoriesApi.data,
+    categoriesApi.isSuccess,
+    groups,
+    storage,
+    usersApi.data,
+    usersApi.isSuccess,
+  ]);
+
+  if (usersApi.isError || categoriesApi.isError) {
     return (
       <GroupContext.Provider
-        value={{ group, setGroup: setGroupManually, categories, users }}
+        value={{
+          ...contextDefaults,
+          group,
+          setGroup: setGroupManually,
+          state: "success",
+        }}
       >
-        {children}
+        <GroupBasics />
+        {usersApi.error?.message}
+        {categoriesApi.error?.message}
       </GroupContext.Provider>
     );
   }
+
+  if (usersApi.isLoading || categoriesApi.isLoading) {
+    return (
+      <GroupContext.Provider
+        value={{
+          ...contextDefaults,
+          group,
+          setGroup: setGroupManually,
+          state: "success",
+        }}
+      >
+        <GroupBasics />
+        <CircularProgress
+          color="inherit"
+          size={50}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        />
+      </GroupContext.Provider>
+    );
+  }
+
+  return (
+    <GroupContext.Provider
+      value={{
+        group,
+        setGroup: setGroupManually,
+        categories,
+        users,
+        state: "success",
+      }}
+    >
+      {children}
+    </GroupContext.Provider>
+  );
 };
 export const useGroup = () => {
   const ctx = useContext(GroupContext);

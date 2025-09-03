@@ -4,7 +4,6 @@ import {
   BoxProps,
   Button,
   Modal,
-  Skeleton,
   Stack,
   SxProps,
   TextareaAutosize,
@@ -15,7 +14,6 @@ import { Dispatch, RefObject, SetStateAction, useRef, useState } from "react";
 import {
   useApiExpensesCreate,
   useApiGroupCategoriesCreate,
-  useApiGroupCategoriesList,
 } from "../api/api/api";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useGroup } from "../context/GroupContext";
@@ -45,7 +43,7 @@ const ExpenseAddForm: React.FC<BoxProps> = (props) => {
   const [childOpen, setChildOpen] = useState(false);
   const [isDescShowed, setIsDescShowed] = useState(false);
   const [categoryValue, setCategoryValue] = useState<string | null>(null);
-  const { group } = useGroup();
+  const { group, categories } = useGroup();
   const {
     register,
     handleSubmit,
@@ -60,11 +58,6 @@ const ExpenseAddForm: React.FC<BoxProps> = (props) => {
       description: "",
       category_input: "",
       date: "",
-    },
-  });
-  const categories = useApiGroupCategoriesList(group, {
-    query: {
-      queryKey: ["category", group],
     },
   });
   const queryClient = useQueryClient();
@@ -89,7 +82,7 @@ const ExpenseAddForm: React.FC<BoxProps> = (props) => {
         });
         return;
       }
-      const isNewCategory = !categories.data?.some(
+      const isNewCategory = !categories.some(
         (c) => c.name === data.category_input
       );
 
@@ -158,45 +151,37 @@ const ExpenseAddForm: React.FC<BoxProps> = (props) => {
                 error={!!errors.amount}
                 helperText={errors.date ? errors.amount?.message : ""}
               />
-              {categories.isLoading ? (
-                <Skeleton animation="wave" sx={{ height: 50 }} />
-              ) : categories.isError ? (
-                <Typography>{categories.error.message}</Typography>
-              ) : (
-                <>
-                  <Autocomplete
-                    id="category"
-                    freeSolo
-                    className="flex-3"
-                    options={categories.data!.map((c) => c.name)}
-                    value={getValues("category_input")}
-                    // error={!!errors.date}
-                    // helperText={errors.date ? errors.date?.message : ""}
-                    onChange={(_e, v) => {
-                      setCategoryValue(v);
-                    }}
-                    onInputChange={(_e, v, r) => {
-                      if (r === "clear") {
-                        setCategoryValue(null);
-                        setValue("category_input", "");
-                        return;
-                      }
-                      setValue("category_input", v);
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        {...register("category_input")}
-                        label="Category"
-                        error={!!errors.category_input}
-                        helperText={
-                          errors.date ? errors.category_input?.message : ""
-                        }
-                      />
-                    )}
+              <Autocomplete
+                id="category"
+                freeSolo
+                className="flex-3"
+                options={categories.map((c) => c.name)}
+                value={getValues("category_input")}
+                // error={!!errors.date}
+                // helperText={errors.date ? errors.date?.message : ""}
+                onChange={(_e, v) => {
+                  setCategoryValue(v);
+                }}
+                onInputChange={(_e, v, r) => {
+                  if (r === "clear") {
+                    setCategoryValue(null);
+                    setValue("category_input", "");
+                    return;
+                  }
+                  setValue("category_input", v);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    {...register("category_input")}
+                    label="Category"
+                    error={!!errors.category_input}
+                    helperText={
+                      errors.date ? errors.category_input?.message : ""
+                    }
                   />
-                </>
-              )}
+                )}
+              />
               <Button
                 type="button"
                 variant="outlined"

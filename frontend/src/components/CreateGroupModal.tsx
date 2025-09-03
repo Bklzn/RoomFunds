@@ -1,0 +1,134 @@
+import {
+  Box,
+  BoxProps,
+  Button,
+  IconButton,
+  IconButtonProps,
+  Modal,
+  Paper,
+  TextField,
+  Tooltip,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import { apiGroupsCreate } from "../api/api/api";
+import { useForm } from "react-hook-form";
+import { Group } from "../api/model";
+import { Add } from "@mui/icons-material";
+import { useEffect, useState } from "react";
+import { useGroup } from "../context/GroupContext";
+
+type FormProps = Omit<Group, "owner" | "moderators" | "members">;
+const CreateGroupModal: React.FC<{
+  boxProps?: BoxProps;
+  btnProps?: IconButtonProps;
+}> = ({ boxProps, btnProps }) => {
+  const theme = useTheme();
+  const { state, setGroup } = useGroup();
+  const [open, setOpen] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+    setError,
+  } = useForm<FormProps>({
+    defaultValues: { name: "", description: "" },
+  });
+
+  useEffect(() => {
+    if (state === "empty") {
+      setTimeout(() => setOpen(true), 500);
+    }
+  }, [state]);
+
+  const onSubmit = async () => {
+    const { name, description } = getValues();
+    await apiGroupsCreate({ name, description }).then(
+      () => setGroup(name),
+      (err) => {
+        console.error(err);
+        Object.keys(err.response?.data).forEach((key) => {
+          setError(key as keyof FormProps, {
+            message: err.response?.data[key][0],
+          });
+        });
+      }
+    );
+  };
+
+  return (
+    <Box {...boxProps}>
+      <Tooltip title="Create Group">
+        <span>
+          <IconButton
+            onClick={() => setOpen(true)}
+            sx={{
+              ml: 1,
+              borderRadius: 1,
+              width: 55,
+              border: "1px solid",
+              borderColor: theme.palette.grey[700],
+              height: "100%",
+            }}
+            {...btnProps}
+            disabled={state === "empty" ? false : btnProps?.disabled}
+          >
+            <Add sx={{ m: "auto" }} />
+          </IconButton>
+        </span>
+      </Tooltip>
+      <Modal open={open} onClose={() => setOpen(false)}>
+        <Paper
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+          sx={{
+            maxWidth: 400,
+            mx: "auto",
+            mt: 4,
+            p: 3,
+            boxShadow: 2,
+            borderRadius: 2,
+            backgroundColor: "background.paper",
+          }}
+        >
+          <Typography variant="h5" mb={2}>
+            Create Group
+          </Typography>
+          <TextField
+            label="Group Name"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            required
+            {...register("name")}
+            error={!!errors.name}
+            helperText={errors.name ? errors.name.message : ""}
+          />
+          <TextField
+            label="Description"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            multiline
+            rows={3}
+            {...register("description")}
+            error={!!errors.description}
+            helperText={errors.description ? errors.description.message : ""}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{ mt: 2 }}
+          >
+            Create
+          </Button>
+        </Paper>
+      </Modal>
+    </Box>
+  );
+};
+
+export default CreateGroupModal;

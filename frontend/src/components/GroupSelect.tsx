@@ -1,37 +1,71 @@
 import {
   Box,
   FormControl,
-  IconButton,
   InputLabel,
+  LinearProgress,
   MenuItem,
   Paper,
   PaperProps,
   Select,
   SelectChangeEvent,
   Skeleton,
-  Tooltip,
   Typography,
-  useTheme,
 } from "@mui/material";
 import { useApiGroupsList } from "../api/api/api";
 import { useGroup } from "../context/GroupContext";
-import { useNavigate } from "react-router-dom";
-import { Add } from "@mui/icons-material";
+import CreateGroupModal from "./CreateGroupModal";
 
-const GroupSelect: typeof Paper = (props: PaperProps) => {
+const GroupSelect: React.FC = (props: PaperProps) => {
+  const { state } = useGroup();
+
+  if (state === "loading") return <LoadingGroupSelect {...props} />;
+  if (state === "error" || state === "empty")
+    return <NoGroupSelect {...props} />;
+
+  return <SuccessGroupSelect {...props} />;
+};
+
+const LoadingGroupSelect: React.FC = (props: PaperProps) => {
   const { sx, ...rest } = props;
+  return (
+    <Paper
+      elevation={3}
+      sx={{
+        p: 1,
+        minWidth: 250,
+        ...sx,
+      }}
+      {...rest}
+    >
+      <FormControl fullWidth>
+        <InputLabel id="demo-simple-select-label">Your Groups</InputLabel>
+        <Box sx={{ display: "flex" }}>
+          <Select
+            defaultValue={1}
+            label="Your Groups"
+            sx={{
+              width: "100%",
+            }}
+            disabled
+          >
+            <MenuItem value={1}>
+              <LinearProgress
+                color="inherit"
+                sx={{ height: 22, opacity: 0.5, borderRadius: 22 }}
+              />
+            </MenuItem>
+          </Select>
+          <CreateGroupModal btnProps={{ loading: true }} />
+        </Box>
+      </FormControl>
+    </Paper>
+  );
+};
+
+const SuccessGroupSelect: React.FC = (props: PaperProps) => {
   const groups = useApiGroupsList();
   const { group, setGroup } = useGroup();
-  const navigate = useNavigate();
-  const theme = useTheme();
-  const handleChange = (event: SelectChangeEvent) => {
-    if (event.target.value === "+newGroup+") {
-      navigate("/creategroup");
-      return;
-    }
-    setGroup(event.target.value as string);
-  };
-
+  const { sx, ...rest } = props;
   return (
     <Paper
       elevation={3}
@@ -55,7 +89,7 @@ const GroupSelect: typeof Paper = (props: PaperProps) => {
               defaultValue={group}
               label="Your Groups"
               error={groups.isError}
-              onChange={handleChange}
+              onChange={(e: SelectChangeEvent) => setGroup(e.target.value)}
               sx={{
                 width: "100%",
               }}
@@ -66,22 +100,40 @@ const GroupSelect: typeof Paper = (props: PaperProps) => {
                 </MenuItem>
               ))}
             </Select>
-            <Tooltip title="Create Group">
-              <IconButton
-                onClick={() => navigate("/creategroup")}
-                sx={{
-                  ml: 1,
-                  borderRadius: 1,
-                  width: 55,
-                  border: "1px solid",
-                  borderColor: theme.palette.grey[700],
-                }}
-              >
-                <Add />
-              </IconButton>
-            </Tooltip>
+            <CreateGroupModal />
           </Box>
         )}
+      </FormControl>
+    </Paper>
+  );
+};
+
+const NoGroupSelect: React.FC<PaperProps> = (props) => {
+  const { sx, ...rest } = props;
+  return (
+    <Paper
+      elevation={3}
+      sx={{
+        p: 1,
+        minWidth: 250,
+        ...sx,
+      }}
+      {...rest}
+    >
+      <FormControl fullWidth>
+        <InputLabel id="demo-simple-select-label">Your Groups</InputLabel>
+        <Box sx={{ display: "flex" }}>
+          <Select
+            value={"---"}
+            label="Your Groups"
+            sx={{
+              width: "100%",
+            }}
+          >
+            <MenuItem value={"---"}>---</MenuItem>
+          </Select>
+          <CreateGroupModal btnProps={{ disabled: true }} />
+        </Box>
       </FormControl>
     </Paper>
   );
