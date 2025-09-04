@@ -3,7 +3,9 @@ import {
   Box,
   BoxProps,
   Button,
+  IconButton,
   Modal,
+  Paper,
   Stack,
   SxProps,
   TextareaAutosize,
@@ -19,14 +21,13 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useGroup } from "../context/GroupContext";
 import { Expense } from "../api/model";
 import { useQueryClient } from "@tanstack/react-query";
-import { AddCircle } from "@mui/icons-material";
+import { AddCircle, Close } from "@mui/icons-material";
 
 const modalStyles: SxProps = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  bgcolor: "background.paper",
   borderRadius: 2,
   boxShadow: 24,
   p: 4,
@@ -129,10 +130,17 @@ const ExpenseAddForm: React.FC<BoxProps> = (props) => {
         Add expenses
       </Button>
       <Modal open={open} onClose={() => setOpen(false)}>
-        <Box sx={modalStyles}>
-          <Typography variant="h6" component="h2" mb={2}>
-            Add new expense
-          </Typography>
+        <Paper sx={modalStyles} elevation={1}>
+          <Stack direction="row" justifyContent="space-between">
+            <Typography variant="h6" component="h2" mb={2}>
+              Add new expense
+            </Typography>
+            <Box>
+              <IconButton onClick={() => setOpen(false)}>
+                <Close />
+              </IconButton>
+            </Box>
+          </Stack>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-row gap-4 flex-wrap">
               <TextField
@@ -215,7 +223,7 @@ const ExpenseAddForm: React.FC<BoxProps> = (props) => {
             setOpen={setChildOpen}
             resolveRef={modalResolveRef}
           />
-        </Box>
+        </Paper>
       </Modal>
     </Box>
   );

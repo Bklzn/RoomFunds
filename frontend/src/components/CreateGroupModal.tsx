@@ -6,6 +6,7 @@ import {
   IconButtonProps,
   Modal,
   Paper,
+  Stack,
   TextField,
   Tooltip,
   Typography,
@@ -14,7 +15,7 @@ import {
 import { apiGroupsCreate } from "../api/api/api";
 import { useForm } from "react-hook-form";
 import { Group } from "../api/model";
-import { Add } from "@mui/icons-material";
+import { Add, Close } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { useGroup } from "../context/GroupContext";
 import { useQueryClient } from "@tanstack/react-query";
@@ -75,11 +76,10 @@ const CreateGroupModal: React.FC<{
   return (
     <Box {...boxProps}>
       <Tooltip title="Create Group">
-        <span>
+        <Box sx={{ ml: 1, height: "100%" }}>
           <IconButton
             onClick={() => setOpen(true)}
             sx={{
-              ml: 1,
               borderRadius: 1,
               width: 55,
               border: "1px solid",
@@ -91,7 +91,7 @@ const CreateGroupModal: React.FC<{
           >
             <Add sx={{ m: "auto" }} />
           </IconButton>
-        </span>
+        </Box>
       </Tooltip>
       <Modal open={open} onClose={() => setOpen(false)}>
         <Paper
@@ -99,7 +99,10 @@ const CreateGroupModal: React.FC<{
           onSubmit={handleSubmit(onSubmit)}
           sx={{
             maxWidth: 400,
-            mx: "auto",
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
             mt: 4,
             p: 3,
             boxShadow: 2,
@@ -107,9 +110,16 @@ const CreateGroupModal: React.FC<{
             backgroundColor: "background.paper",
           }}
         >
-          <Typography variant="h5" mb={2}>
-            Create Group
-          </Typography>
+          <Stack direction="row" justifyContent="space-between">
+            <Typography variant="h5" sx={{ my: "auto" }}>
+              Create Group
+            </Typography>
+            <Box>
+              <IconButton onClick={() => setOpen(false)}>
+                <Close />
+              </IconButton>
+            </Box>
+          </Stack>
           <TextField
             label="Group Name"
             variant="outlined"
