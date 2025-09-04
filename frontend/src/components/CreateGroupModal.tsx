@@ -27,6 +27,7 @@ const CreateGroupModal: React.FC<{
   const theme = useTheme();
   const { state, setGroup } = useGroup();
   const [open, setOpen] = useState(false);
+  const [isLoad, setIsLoad] = useState(false);
   const {
     register,
     handleSubmit,
@@ -45,12 +46,20 @@ const CreateGroupModal: React.FC<{
   }, [state]);
 
   const onSubmit = async () => {
+    setIsLoad(true);
     const { name, description } = getValues();
     await apiGroupsCreate({ name, description }).then(
       () => {
-        setGroup(name);
-        setOpen(false);
-        queryClient.invalidateQueries({ queryKey: ["groups"] });
+        queryClient
+          .invalidateQueries({ queryKey: ["groups"] })
+          .then(() => {
+            setGroup(name);
+            setOpen(false);
+            setIsLoad(false);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
       },
       (err) => {
         console.error(err);
@@ -128,6 +137,7 @@ const CreateGroupModal: React.FC<{
             color="primary"
             fullWidth
             sx={{ mt: 2 }}
+            loading={isLoad}
           >
             Create
           </Button>
