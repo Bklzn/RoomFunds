@@ -10,7 +10,7 @@ import {
   useApiGroupsList,
   useApiGroupUsersList,
 } from "../api/api/api";
-import { Category, Group, User } from "../api/model";
+import { Category, User } from "../api/model";
 import NoGroupsHandler from "../components/NoGroupsHandler";
 import GroupBasics from "../components/GroupBasics";
 import { CircularProgress } from "@mui/material";
@@ -35,7 +35,25 @@ const GroupContext = createContext<GroupContextProps>(contextDefaults);
 export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const [group, setGroup] = useState("");
   const groups = useApiGroupsList({ query: { queryKey: ["groups"] } });
+
+  const setGroupManually = (value: SetStateAction<string>) => {
+    setGroup(value);
+    localStorage.setItem("selectedGroup", value.toString());
+  };
+
+  useEffect(() => {
+    if (!groups.isSuccess || !groups.data.length) return;
+    const storage = localStorage.getItem("selectedGroup");
+
+    if (!storage || !groups.data.some((g) => g.name === storage)) {
+      setGroup(groups.data[0].name);
+      localStorage.setItem("selectedGroup", groups.data[0].name);
+    } else {
+      setGroup(storage);
+    }
+  }, [groups]);
 
   if (groups.isError) {
     return (
@@ -65,17 +83,20 @@ export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
   if (groups.isSuccess) {
     if (!groups.data.length) {
       return (
-        <GroupContext.Provider value={{ ...contextDefaults, state: "empty" }}>
+        <GroupContext.Provider
+          value={{
+            ...contextDefaults,
+            setGroup: setGroupManually,
+            state: "empty",
+          }}
+        >
           <GroupBasics />
           <NoGroupsHandler />
         </GroupContext.Provider>
       );
     }
     return (
-      <GroupsProvider
-        groups={groups.data}
-        state={groups.data.length ? "success" : "error"}
-      >
+      <GroupsProvider group={group} setGroup={setGroupManually}>
         <GroupBasics />
         {children}
       </GroupsProvider>
@@ -85,11 +106,9 @@ export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
 
 const GroupsProvider: React.FC<{
   children: React.ReactNode;
-  groups: Group[];
-  state: GroupContextProps["state"];
-}> = ({ children, groups }) => {
-  const storage = localStorage.getItem("selectedGroup");
-  const [group, setGroup] = useState("");
+  group: GroupContextProps["group"];
+  setGroup: GroupContextProps["setGroup"];
+}> = ({ children, group, setGroup }) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const usersApi = useApiGroupUsersList(group, {
@@ -103,25 +122,12 @@ const GroupsProvider: React.FC<{
     },
   });
 
-  const setGroupManually = (value: SetStateAction<string>) => {
-    setGroup(value);
-    localStorage.setItem("selectedGroup", value.toString());
-  };
-
   useEffect(() => {
-    if (!storage || !groups.some((g) => g.name === storage)) {
-      setGroup(groups[0].name);
-      localStorage.setItem("selectedGroup", groups[0].name);
-    } else {
-      setGroup(storage);
-    }
     if (categoriesApi.isSuccess) setCategories(categoriesApi.data);
     if (usersApi.isSuccess) setUsers(usersApi.data);
   }, [
     categoriesApi.data,
     categoriesApi.isSuccess,
-    groups,
-    storage,
     usersApi.data,
     usersApi.isSuccess,
   ]);
@@ -132,7 +138,7 @@ const GroupsProvider: React.FC<{
         value={{
           ...contextDefaults,
           group,
-          setGroup: setGroupManually,
+          setGroup,
           state: "success",
         }}
       >
@@ -149,7 +155,7 @@ const GroupsProvider: React.FC<{
         value={{
           ...contextDefaults,
           group,
-          setGroup: setGroupManually,
+          setGroup: setGroup,
           state: "success",
         }}
       >
@@ -172,7 +178,7 @@ const GroupsProvider: React.FC<{
     <GroupContext.Provider
       value={{
         group,
-        setGroup: setGroupManually,
+        setGroup: setGroup,
         categories,
         users,
         state: "success",
