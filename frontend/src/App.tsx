@@ -5,9 +5,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import ExpensesList from "./components/ExpensesList";
 import { Route, Routes } from "react-router-dom";
-import AuthCodeExchange from "./pages/AuthCodeExchange";
 import { GroupProvider } from "./context/GroupContext";
-import LogoutRedirect from "./pages/LogoutRedirect";
 import { Box, Paper } from "@mui/material";
 import Sidebar from "./components/Sidebar/Sidebar";
 
@@ -36,8 +34,6 @@ function App() {
               </GroupProvider>
             }
           />
-          <Route path="/auth/:code" element={<AuthCodeExchange />} />
-          <Route path="/logout" element={<LogoutRedirect />} />
         </Routes>
       </Paper>
     </Box>

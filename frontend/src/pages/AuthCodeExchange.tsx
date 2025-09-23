@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTokenExchangeRetrieve } from "../api/token/token";
+import { CircularProgress } from "@mui/material";
 
 const AuthCodeExchange: React.FC = () => {
   const navigate = useNavigate();
@@ -25,7 +26,18 @@ const AuthCodeExchange: React.FC = () => {
     }
   }, [code, navigate, api]);
 
-  return <p>Logging in...</p>;
+  return (
+    <CircularProgress
+      color="inherit"
+      size={50}
+      sx={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+      }}
+    />
+  );
 };
 
 export default AuthCodeExchange;
