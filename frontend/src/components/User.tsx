@@ -48,12 +48,20 @@ const User: React.FC<Props> = ({ userId, variant = "all", ...boxProps }) => {
     return user ? <UserAllInfo user={user} /> : <NoUserError />;
 };
 
-export const UserHover: React.FC<{ user: UserApi; boxProps: BoxProps }> = ({
-  user,
-  boxProps,
-}) => (
+export const UserHover: React.FC<{
+  user: UserApi;
+  boxProps: BoxProps;
+}> = ({ user, boxProps }) => (
   <Tooltip
-    title={user ? <UserAllInfo user={user} /> : <NoUserError />}
+    title={
+      user ? (
+        <Paper elevation={2}>
+          <UserAllInfo user={user} />
+        </Paper>
+      ) : (
+        <NoUserError />
+      )
+    }
     slots={{
       transition: Zoom,
     }}
@@ -101,8 +109,12 @@ export const UserAvatar: React.FC<{ src: string; alt: string }> = ({
   />
 );
 
-export const UserAllInfo: React.FC<{ user: UserApi }> = ({ user }) => (
+export const UserAllInfo: React.FC<{ user: UserApi; boxProps?: BoxProps }> = ({
+  user,
+  boxProps,
+}) => (
   <Box
+    {...boxProps}
     sx={{
       p: 2,
       display: "flex",
