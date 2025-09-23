@@ -52,9 +52,9 @@ const BalanceError: React.FC = () => (
 );
 
 const BalanceSuccess: React.FC = () => {
-  const { group } = useGroup();
-  const expenses = useApiExpensesList({ groupName: group });
-  const users = useApiGroupUsersList(group);
+  const { selectedGroup } = useGroup();
+  const expenses = useApiExpensesList({ groupName: selectedGroup });
+  const users = useApiGroupUsersList(selectedGroup);
   const user = useWhoamiRetrieve();
 
   if (!expenses.data || !users.data || !user.data) return <BalanceLoading />;

@@ -44,7 +44,7 @@ const ExpenseAddForm: React.FC<BoxProps> = (props) => {
   const [childOpen, setChildOpen] = useState(false);
   const [isDescShowed, setIsDescShowed] = useState(false);
   const [categoryValue, setCategoryValue] = useState<string | null>(null);
-  const { group, categories } = useGroup();
+  const { selectedGroup, categories } = useGroup();
   const {
     register,
     handleSubmit,
@@ -97,7 +97,7 @@ const ExpenseAddForm: React.FC<BoxProps> = (props) => {
         data: {
           ...data,
           description: isDescShowed ? data.description : "",
-          group,
+          group: selectedGroup,
         },
       })
       .then(
@@ -240,17 +240,19 @@ const CategoryAddModal: React.FC<{
   };
   const saveCategory = useApiGroupCategoriesCreate();
   const queryClient = useQueryClient();
-  const { group } = useGroup();
+  const { selectedGroup } = useGroup();
   const handleSaveCategory = async () => {
     await saveCategory
       .mutateAsync({
-        groupName: group,
+        groupName: selectedGroup,
         data: {
           name: categoryName,
         },
       })
       .then(() => {
-        queryClient.invalidateQueries({ queryKey: ["category", group] });
+        queryClient.invalidateQueries({
+          queryKey: ["category", selectedGroup],
+        });
         console.log("category created");
       })
       .catch((err) => console.error(err));

@@ -64,7 +64,7 @@ const LoadingGroupSelect: React.FC = (props: PaperProps) => {
 
 const SuccessGroupSelect: React.FC = (props: PaperProps) => {
   const groups = useApiGroupsList({ query: { queryKey: ["groups"] } });
-  const { group, setGroup } = useGroup();
+  const { selectedGroup, setGroup } = useGroup();
   const { sx, ...rest } = props;
   return (
     <Paper
@@ -85,8 +85,8 @@ const SuccessGroupSelect: React.FC = (props: PaperProps) => {
         ) : (
           <Box sx={{ display: "flex" }}>
             <Select
-              value={group}
-              defaultValue={group}
+              value={selectedGroup}
+              defaultValue={selectedGroup}
               label="Your Groups"
               error={groups.isError}
               onChange={(e: SelectChangeEvent) => setGroup(e.target.value)}

@@ -1,124 +1,57 @@
-import React, {
-  createContext,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   useApiGroupCategoriesList,
-  useApiGroupsList,
   useApiGroupUsersList,
 } from "../api/api/api";
 import { Category, User } from "../api/model";
 import NoGroupsHandler from "../components/NoGroupsHandler";
 import GroupBasics from "../components/GroupBasics";
 import { CircularProgress } from "@mui/material";
-
-interface GroupContextProps {
-  group: string;
-  setGroup: (value: SetStateAction<string>) => void;
-  categories: Category[];
-  users: User[];
-  state: "loading" | "success" | "error" | "empty";
-}
-
-const contextDefaults: GroupContextProps = {
-  group: "",
-  setGroup: () => {},
-  categories: [],
-  users: [],
-  state: "loading",
-};
+import { contextDefaults, GroupContextProps } from "./contextProps";
+import { AuthGroupContext } from "./AuthGroupsContext";
 
 const GroupContext = createContext<GroupContextProps>(contextDefaults);
-export const GroupProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [group, setGroup] = useState("");
-  const groups = useApiGroupsList({ query: { queryKey: ["groups"] } });
 
-  const setGroupManually = (value: SetStateAction<string>) => {
-    setGroup(value);
-    localStorage.setItem("selectedGroup", value.toString());
-  };
+export const GroupProvider: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
+  const { selectedGroup, ...rest } = useContext(AuthGroupContext);
 
-  useEffect(() => {
-    if (!groups.isSuccess || !groups.data.length) return;
-    const storage = localStorage.getItem("selectedGroup");
-
-    if (!storage || !groups.data.some((g) => g.name === storage)) {
-      setGroup(groups.data[0].name);
-      localStorage.setItem("selectedGroup", groups.data[0].name);
-    } else {
-      setGroup(storage);
-    }
-  }, [groups]);
-
-  if (groups.isError) {
-    return (
-      <GroupContext.Provider value={{ ...contextDefaults, state: "error" }}>
-        <GroupBasics />
-        {groups.error.message}
-      </GroupContext.Provider>
-    );
-  }
-  if (groups.isLoading) {
-    return (
-      <GroupContext.Provider value={{ ...contextDefaults, state: "loading" }}>
-        <GroupBasics />
-        <CircularProgress
-          color="inherit"
-          size={50}
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        />
-      </GroupContext.Provider>
-    );
-  }
-  if (groups.isSuccess) {
-    if (!groups.data.length) {
-      return (
-        <GroupContext.Provider
-          value={{
-            ...contextDefaults,
-            setGroup: setGroupManually,
-            state: "empty",
-          }}
-        >
-          <GroupBasics />
-          <NoGroupsHandler />
-        </GroupContext.Provider>
-      );
-    }
-    return (
-      <GroupsProvider group={group} setGroup={setGroupManually}>
-        <GroupBasics />
-        {children}
-      </GroupsProvider>
-    );
-  }
+  return selectedGroup ? (
+    <SelectedGroupProvider contextProps={{ selectedGroup, ...rest }}>
+      {children}
+    </SelectedGroupProvider>
+  ) : (
+    <NoGroupProvider contextProps={{ selectedGroup, ...rest }} />
+  );
 };
 
-const GroupsProvider: React.FC<{
+const NoGroupProvider: React.FC<{ contextProps: GroupContextProps }> = ({
+  contextProps,
+}) => {
+  return (
+    <GroupContext.Provider value={contextProps}>
+      <NoGroupsHandler />
+    </GroupContext.Provider>
+  );
+};
+
+const SelectedGroupProvider: React.FC<{
   children: React.ReactNode;
-  group: GroupContextProps["group"];
-  setGroup: GroupContextProps["setGroup"];
-}> = ({ children, group, setGroup }) => {
+  contextProps: GroupContextProps;
+}> = ({ children, contextProps }) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-  const usersApi = useApiGroupUsersList(group, {
+
+  const { selectedGroup, ...rest } = contextProps;
+  const usersApi = useApiGroupUsersList(selectedGroup, {
     query: {
-      queryKey: ["users", group],
+      queryKey: ["users", selectedGroup],
     },
   });
-  const categoriesApi = useApiGroupCategoriesList(group, {
+  const categoriesApi = useApiGroupCategoriesList(selectedGroup, {
     query: {
-      queryKey: ["category", group],
+      queryKey: ["category", selectedGroup],
     },
   });
 
@@ -136,9 +69,8 @@ const GroupsProvider: React.FC<{
     return (
       <GroupContext.Provider
         value={{
-          ...contextDefaults,
-          group,
-          setGroup,
+          ...rest,
+          selectedGroup,
           state: "success",
         }}
       >
@@ -153,9 +85,8 @@ const GroupsProvider: React.FC<{
     return (
       <GroupContext.Provider
         value={{
-          ...contextDefaults,
-          group,
-          setGroup: setGroup,
+          ...rest,
+          selectedGroup,
           state: "success",
         }}
       >
@@ -177,13 +108,14 @@ const GroupsProvider: React.FC<{
   return (
     <GroupContext.Provider
       value={{
-        group,
-        setGroup: setGroup,
+        ...rest,
+        selectedGroup,
         categories,
         users,
         state: "success",
       }}
     >
+      <GroupBasics />
       {children}
     </GroupContext.Provider>
   );
