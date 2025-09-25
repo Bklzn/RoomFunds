@@ -18,13 +18,9 @@ class GroupsView(GenericAPIView):
     queryset = Group.objects.all()
     
     def get(self, request):
-        expenses = self.get_queryset().filter(members=request.user)
-        serializer = self.get_serializer(expenses, many=True)
-        filtered_data = [
-            {k: v for k, v in item.items() if k in ['name', 'owner']}
-            for item in serializer.data
-        ]
-        return Response(filtered_data)
+        groups = self.get_queryset().filter(members=request.user)
+        serializer = self.get_serializer(groups, many=True)
+        return Response(serializer.data)
     
     def post(self, request):
         serializer = self.get_serializer(data=request.data)

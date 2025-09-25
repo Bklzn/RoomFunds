@@ -3,9 +3,15 @@ from user_auth.serializers import UserSerializer
 from ..models import Group
 
 class GroupSerializer(serializers.ModelSerializer):
-    owner = serializers.SerializerMethodField()
-    moderators = serializers.SerializerMethodField()
-    members = serializers.SerializerMethodField()
+    owner = serializers.SerializerMethodField(method_name='get_owner_id')
+    moderators = serializers.ListSerializer(
+        child=serializers.CharField(),
+        read_only=True
+    )
+    members = serializers.ListSerializer(
+        child=serializers.CharField(),
+        read_only=True
+    )
     
     class Meta:
         model = Group
@@ -32,14 +38,12 @@ class GroupSerializer(serializers.ModelSerializer):
         group.members.add(user)
         return group
     
-    def get_owner(self, obj):
-        return UserSerializer(instance=obj.owner).data['id']
+    def get_owner_id(self, obj):
+        return str(obj.owner.id)
 
-    def get_moderators(self, obj):
-        serializers = UserSerializer(instance=obj.moderators.all(), many=True).data
-        return [user['id'] for user in serializers]
+    def get_moderators_ids(self, obj):
+        return [str(moderator.id) for moderator in obj.moderators.all()]
         
-    def get_members(self, obj):
-        serializers = UserSerializer(instance=obj.members.all(), many=True).data
-        return [user['id'] for user in serializers]
+    def get_members_ids(self, obj):
+        return [str(member.id) for member in obj.members.all()]
     
