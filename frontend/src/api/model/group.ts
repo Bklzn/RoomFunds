@@ -9,6 +9,6 @@ export interface Group {
   name: string;
   description?: string;
   readonly owner: string;
-  readonly moderators: string;
-  readonly members: string;
+  readonly moderators: readonly string[];
+  readonly members: readonly string[];
 }

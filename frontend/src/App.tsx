@@ -8,6 +8,7 @@ import { Route, Routes } from "react-router-dom";
 import { GroupProvider } from "./context/GroupContext";
 import { Box, Paper } from "@mui/material";
 import Sidebar from "./components/Sidebar/Sidebar";
+import GroupInfo from "./pages/GroupInfo";
 
 function App() {
   return (
@@ -23,18 +24,19 @@ function App() {
         component={"main"}
         elevation={3}
       >
-        <Routes>
-          <Route
-            path="*"
-            element={
-              <GroupProvider>
+        <GroupProvider>
+          <Routes>
+            <Route
+              path="*"
+              element={
                 <div className="w-full">
                   <ExpensesList />
                 </div>
-              </GroupProvider>
-            }
-          />
-        </Routes>
+              }
+            />
+            <Route path="/group" element={<GroupInfo />} />
+          </Routes>
+        </GroupProvider>
       </Paper>
     </Box>
   );

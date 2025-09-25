@@ -18,6 +18,7 @@ import {
   BarChart,
   ChevronLeft,
   ChevronRight,
+  Group,
   Logout,
   Settings,
   TableView,
@@ -150,6 +151,19 @@ const Sidebar: React.FC = () => {
                   active={location.pathname === "/stats"}
                 >
                   <BarChart />
+                </SidebarListItemBtn>
+              </ListItem>
+            </Tooltip>
+            <Tooltip title="In development" arrow enterDelay={500}>
+              <ListItem disablePadding sx={{ display: "block" }}>
+                <SidebarListItemBtn
+                  open={open}
+                  text="Group"
+                  disabled
+                  active={location.pathname === "/group"}
+                  onClick={() => navigate("/group")}
+                >
+                  <Group />
                 </SidebarListItemBtn>
               </ListItem>
             </Tooltip>
