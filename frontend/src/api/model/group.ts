@@ -11,4 +11,6 @@ export interface Group {
   readonly owner: string;
   readonly moderators: readonly string[];
   readonly members: readonly string[];
+  /** @pattern ^-?\d{0,8}(?:\.\d{0,2})?$ */
+  readonly total_amount: string;
 }
