@@ -82,5 +82,5 @@ class GroupMemberView(GenericAPIView):
     def get(self, request, group_name):
         group = get_object_or_404(Group, name=group_name, members=request.user)
         users = group.members.all()
-        serializer = self.get_serializer(users, many=True)
+        serializer = self.get_serializer(users, many=True, context={"group": group})
         return Response(serializer.data)

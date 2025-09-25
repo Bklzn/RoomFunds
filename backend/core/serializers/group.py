@@ -1,21 +1,16 @@
 from rest_framework import serializers
-from user_auth.serializers import UserSerializer
 from ..models import Group
+from drf_spectacular.utils import extend_schema_field
 
 class GroupSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField(method_name='get_owner_id')
-    moderators = serializers.ListSerializer(
-        child=serializers.CharField(),
-        read_only=True
-    )
-    members = serializers.ListSerializer(
-        child=serializers.CharField(),
-        read_only=True
-    )
+    moderators = serializers.SerializerMethodField(method_name='get_moderators_ids')
+    members = serializers.SerializerMethodField(method_name='get_members_ids')
+    total_amount = serializers.SerializerMethodField()
     
     class Meta:
         model = Group
-        fields = ['name', 'description', 'owner', 'moderators', 'members']
+        fields = ['name', 'description', 'owner', 'moderators', 'members', 'total_amount']
         read_only_fields = ['id']
         
     def __init__(self, *args, **kwargs):
@@ -40,10 +35,17 @@ class GroupSerializer(serializers.ModelSerializer):
     
     def get_owner_id(self, obj):
         return str(obj.owner.id)
-
+    
+    @extend_schema_field(serializers.ListField(child=serializers.CharField(), read_only=True))
     def get_moderators_ids(self, obj):
         return [str(moderator.id) for moderator in obj.moderators.all()]
-        
+    
+    @extend_schema_field(serializers.ListField(child=serializers.CharField(), read_only=True))
     def get_members_ids(self, obj):
         return [str(member.id) for member in obj.members.all()]
+    
+    @extend_schema_field(serializers.DecimalField(max_digits=10, decimal_places=2, min_value=0))
+    def get_total_amount(self, obj):
+        group_expenses = obj.expenses.all()
+        return sum([expense.amount for expense in group_expenses])
     
