@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models import Group
+from ..models import Group, GroupMembership
 from drf_spectacular.utils import extend_schema_field
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -38,7 +38,10 @@ class GroupSerializer(serializers.ModelSerializer):
     
     @extend_schema_field(serializers.ListField(child=serializers.CharField(), read_only=True))
     def get_moderators_ids(self, obj):
-        return [str(moderator.id) for moderator in obj.moderators.all()]
+         return [
+        str(m.user.id)
+        for m in obj.memberships.filter(role=GroupMembership.ROLE_MODERATOR)
+    ]
     
     @extend_schema_field(serializers.ListField(child=serializers.CharField(), read_only=True))
     def get_members_ids(self, obj):

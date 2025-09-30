@@ -4,9 +4,8 @@ from django.contrib.auth.models import User
 class Group(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-    members = models.ManyToManyField(User, related_name="expense_groups", blank=True)
+    members = models.ManyToManyField(User, related_name="expense_groups", through='GroupMembership', blank=True)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='owned_groups')
-    moderators = models.ManyToManyField(User, related_name="moderated_groups", blank=True)
         
     def __str__(self):
         return f"{self.name}"

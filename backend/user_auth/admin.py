@@ -1,6 +1,7 @@
 from django.contrib import admin
 from social_django.models import UserSocialAuth
 from .models import LoginCode
+from core.models import GroupMembership
 from django.utils.html import mark_safe
 
 class UserSocialAuthAdminWithAvatar(admin.ModelAdmin):
@@ -15,8 +16,11 @@ class UserSocialAuthAdminWithAvatar(admin.ModelAdmin):
         return "-"
     
     avatar_preview.short_description = "Avatar"
+    
+class GroupMembershipAdmin(admin.ModelAdmin):
+    list_display = ('user', 'group')
 
-# Odrejestrowujemy domyślną i rejestrujemy własną wersję
 admin.site.unregister(UserSocialAuth)
 admin.site.register(UserSocialAuth, UserSocialAuthAdminWithAvatar)
+admin.site.register(GroupMembership, GroupMembershipAdmin)
 admin.site.register(LoginCode)
