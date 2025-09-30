@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from social_django.models import UserSocialAuth
 from django.contrib.auth.models import User
-from core.models import Expense
+from core.models import Expense, GroupMembership
 
 class UserSocialAuthSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
@@ -15,10 +15,11 @@ class UserSerializer(serializers.ModelSerializer):
     avatar = serializers.SerializerMethodField()
     display = serializers.SerializerMethodField()
     total_group_expenses = serializers.SerializerMethodField()
+    joined_at = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id','username', 'email', 'first_name', 'last_name', 'avatar', 'display', 'total_group_expenses']
+        fields = ['id','username', 'email', 'first_name', 'last_name', 'avatar', 'display', 'total_group_expenses', 'joined_at']
 
     def get_avatar(self, user):
         social = user.social_auth.filter(provider='google-oauth2').first()
@@ -35,3 +36,10 @@ class UserSerializer(serializers.ModelSerializer):
             return None
         expenses = Expense.objects.filter(group=group)
         return sum([expense.amount for expense in expenses])
+    
+    def get_joined_at(self, obj):
+        group = self.context.get('group')
+        if not group:
+            return None
+        membership = GroupMembership.objects.filter(group=group, user=obj).first()
+        return membership.joined_at

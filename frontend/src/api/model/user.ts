@@ -21,4 +21,5 @@ export interface User {
   readonly avatar: string;
   readonly display: string;
   readonly total_group_expenses: string;
+  readonly joined_at: string;
 }

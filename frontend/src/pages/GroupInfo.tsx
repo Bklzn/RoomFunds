@@ -17,6 +17,7 @@ import { useGroup } from "../context/GroupContext";
 import User from "../components/User";
 import { Group } from "../api/model";
 import { AddModerator, Delete, Edit } from "@mui/icons-material";
+import DateFormat from "../components/DateFormat";
 
 const GroupInfo: React.FC = () => {
   const { groups, selectedGroup } = useGroup();
@@ -51,23 +52,17 @@ const GroupInfo: React.FC = () => {
           </Box>
           <Box sx={{ display: "flex", flexDirection: "row", gap: 3 }}>
             <Typography variant="body1">Descritpion:</Typography>
-            <Typography variant="body1">
-              {group.description ? (
-                group.description
-              ) : (
-                <Typography
-                  variant="body2"
-                  color="text.disabled"
-                  sx={{ fontStyle: "italic", mt: "0.2em" }}
-                >
-                  No description
-                </Typography>
-              )}
-            </Typography>
-          </Box>
-          <Box sx={{ display: "flex", flexDirection: "row", gap: 3 }}>
-            <Typography variant="body1">Created at:</Typography>
-            <Typography variant="body1">&lt;date&gt;</Typography>
+            {group.description ? (
+              <Typography variant="body1">{group.description}</Typography>
+            ) : (
+              <Typography
+                variant="body2"
+                color="text.disabled"
+                sx={{ fontStyle: "italic", mt: "0.2em" }}
+              >
+                No description
+              </Typography>
+            )}
           </Box>
         </Box>
         <Tooltip title="In development" arrow>
@@ -101,6 +96,7 @@ const GroupInfo: React.FC = () => {
               <TableCell align="right">Balance</TableCell>
               <TableCell align="right">Total Spent</TableCell>
               <TableCell align="center">Role</TableCell>
+              <TableCell align="center">Joined At</TableCell>
               <TableCell align="right">Options</TableCell>
             </TableRow>
           </TableHead>
@@ -143,6 +139,9 @@ const FetchedData: React.FC = () => {
         <TableCell align="right">{userAmount.toFixed(2)}</TableCell>
         <TableCell align="center">
           <RoleBadge group={group} userId={String(user.id)} />
+        </TableCell>
+        <TableCell align="center">
+          <DateFormat dateStr={user.joined_at} />
         </TableCell>
         <TableCell align="right">
           <UserOptions />
