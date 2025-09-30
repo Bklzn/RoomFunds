@@ -113,11 +113,12 @@ const FetchedData: React.FC = () => {
   const { users, groups, selectedGroup } = useGroup();
   const userCount = users.length;
   const group = groups.filter((g) => g.name === selectedGroup)[0];
+  const totalAmount = Number(group.total_amount);
 
   return users.map((user, idx) => {
     const userAmount = Number(user.total_group_expenses);
-    const sharePerUser = userAmount / userCount;
-    const userBalance = sharePerUser - userAmount;
+    const sharePerUser = totalAmount / userCount;
+    const userBalance = userAmount - sharePerUser;
     return (
       <TableRow key={idx}>
         <TableCell component="th" scope="row" sx={{ p: 0 }}>

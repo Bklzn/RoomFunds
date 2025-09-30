@@ -34,7 +34,7 @@ class UserSerializer(serializers.ModelSerializer):
         group = self.context.get('group')
         if not group:
             return None
-        expenses = Expense.objects.filter(group=group)
+        expenses = Expense.objects.filter(group=group, user=obj)
         return sum([expense.amount for expense in expenses])
     
     def get_joined_at(self, obj):
