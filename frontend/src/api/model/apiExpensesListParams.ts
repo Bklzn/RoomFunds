@@ -6,7 +6,7 @@
 
 export type ApiExpensesListParams = {
 /**
- * Group name
+ * slug of the object
  */
-groupName: string;
+slug: string;
 };

@@ -28,19 +28,22 @@ class ExpensesView(GenericAPIView):
     queryset = Expense.objects.all()
     
     @extend_schema(parameters=[
-            OpenApiParameter(name='groupName', description='Group name', required=True, type=str)
+            OpenApiParameter(name='slug', description='slug of the object', required=True, type=str)
     ])
     def get(self, request):
         try:
-            group_name = request.GET['groupName']
+            slug = request.GET['slug']
         except KeyError:
-            raise Http404('No groupName provided')
-        group = get_object_or_404(Group, name=group_name, members=request.user)
+            raise Http404('No slug provided')
+        group = get_object_or_404(Group, slug=slug, members=request.user)
         expenses = self.get_queryset().filter(group=group.id)
         serializer = self.get_serializer(expenses, many=True)
         return Response(serializer.data)
     
     def post(self, request):
+        slugGroup = request.data['group']
+        group = get_object_or_404(Group, slug=slugGroup, members=request.user)
+        request.data['group'] = group
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

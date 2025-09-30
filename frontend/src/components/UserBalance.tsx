@@ -58,7 +58,7 @@ const BalanceError: React.FC = () => (
 
 const BalanceSuccess: React.FC = () => {
   const { selectedGroup, groups, users } = useGroup();
-  const group = groups.filter((g) => g.name === selectedGroup)[0];
+  const group = groups.filter((g) => g.slug === selectedGroup)[0];
   const whoami = useWhoamiRetrieve();
 
   const totalAmount = Number(group.total_amount);

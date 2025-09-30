@@ -396,261 +396,40 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
       return useMutation(mutationOptions , queryClient);
     }
-    export const apiGroupCategoriesList = (
-    groupName: string,
- options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
-) => {
-      
-      
-      return customInstance<Category[]>(
-      {url: `/api/group/${groupName}/categories`, method: 'GET', signal
-    },
-      options);
-    }
-  
-
-export const getApiGroupCategoriesListQueryKey = (groupName: string,) => {
-    return [`/api/group/${groupName}/categories`] as const;
-    }
-
-    
-export const getApiGroupCategoriesListQueryOptions = <TData = Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError = ErrorType<unknown>>(groupName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiGroupCategoriesListQueryKey(groupName);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiGroupCategoriesList>>> = ({ signal }) => apiGroupCategoriesList(groupName, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(groupName), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ApiGroupCategoriesListQueryResult = NonNullable<Awaited<ReturnType<typeof apiGroupCategoriesList>>>
-export type ApiGroupCategoriesListQueryError = ErrorType<unknown>
-
-
-export function useApiGroupCategoriesList<TData = Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError = ErrorType<unknown>>(
- groupName: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof apiGroupCategoriesList>>,
-          TError,
-          Awaited<ReturnType<typeof apiGroupCategoriesList>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useApiGroupCategoriesList<TData = Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError = ErrorType<unknown>>(
- groupName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof apiGroupCategoriesList>>,
-          TError,
-          Awaited<ReturnType<typeof apiGroupCategoriesList>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useApiGroupCategoriesList<TData = Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError = ErrorType<unknown>>(
- groupName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-
-export function useApiGroupCategoriesList<TData = Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError = ErrorType<unknown>>(
- groupName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getApiGroupCategoriesListQueryOptions(groupName,options)
-
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-export const apiGroupCategoriesCreate = (
-    groupName: string,
-    category: BodyType<NonReadonly<Category>>,
- options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
-) => {
-      
-      
-      return customInstance<Category[]>(
-      {url: `/api/group/${groupName}/categories`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: category, signal
-    },
-      options);
-    }
-  
-
-
-export const getApiGroupCategoriesCreateMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiGroupCategoriesCreate>>, TError,{groupName: string;data: BodyType<NonReadonly<Category>>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof apiGroupCategoriesCreate>>, TError,{groupName: string;data: BodyType<NonReadonly<Category>>}, TContext> => {
-
-const mutationKey = ['apiGroupCategoriesCreate'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiGroupCategoriesCreate>>, {groupName: string;data: BodyType<NonReadonly<Category>>}> = (props) => {
-          const {groupName,data} = props ?? {};
-
-          return  apiGroupCategoriesCreate(groupName,data,requestOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ApiGroupCategoriesCreateMutationResult = NonNullable<Awaited<ReturnType<typeof apiGroupCategoriesCreate>>>
-    export type ApiGroupCategoriesCreateMutationBody = BodyType<NonReadonly<Category>>
-    export type ApiGroupCategoriesCreateMutationError = ErrorType<unknown>
-
-    export const useApiGroupCategoriesCreate = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiGroupCategoriesCreate>>, TError,{groupName: string;data: BodyType<NonReadonly<Category>>}, TContext>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof apiGroupCategoriesCreate>>,
-        TError,
-        {groupName: string;data: BodyType<NonReadonly<Category>>},
-        TContext
-      > => {
-
-      const mutationOptions = getApiGroupCategoriesCreateMutationOptions(options);
-
-      return useMutation(mutationOptions , queryClient);
-    }
-    export const apiGroupUsersList = (
-    groupName: string,
- options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
-) => {
-      
-      
-      return customInstance<User[]>(
-      {url: `/api/group/${groupName}/users`, method: 'GET', signal
-    },
-      options);
-    }
-  
-
-export const getApiGroupUsersListQueryKey = (groupName: string,) => {
-    return [`/api/group/${groupName}/users`] as const;
-    }
-
-    
-export const getApiGroupUsersListQueryOptions = <TData = Awaited<ReturnType<typeof apiGroupUsersList>>, TError = ErrorType<unknown>>(groupName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupUsersList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getApiGroupUsersListQueryKey(groupName);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiGroupUsersList>>> = ({ signal }) => apiGroupUsersList(groupName, requestOptions, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, enabled: !!(groupName), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiGroupUsersList>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type ApiGroupUsersListQueryResult = NonNullable<Awaited<ReturnType<typeof apiGroupUsersList>>>
-export type ApiGroupUsersListQueryError = ErrorType<unknown>
-
-
-export function useApiGroupUsersList<TData = Awaited<ReturnType<typeof apiGroupUsersList>>, TError = ErrorType<unknown>>(
- groupName: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupUsersList>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof apiGroupUsersList>>,
-          TError,
-          Awaited<ReturnType<typeof apiGroupUsersList>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useApiGroupUsersList<TData = Awaited<ReturnType<typeof apiGroupUsersList>>, TError = ErrorType<unknown>>(
- groupName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupUsersList>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof apiGroupUsersList>>,
-          TError,
-          Awaited<ReturnType<typeof apiGroupUsersList>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useApiGroupUsersList<TData = Awaited<ReturnType<typeof apiGroupUsersList>>, TError = ErrorType<unknown>>(
- groupName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupUsersList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-
-export function useApiGroupUsersList<TData = Awaited<ReturnType<typeof apiGroupUsersList>>, TError = ErrorType<unknown>>(
- groupName: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupUsersList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getApiGroupUsersListQueryOptions(groupName,options)
-
-  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-export const apiGroupRetrieve = (
-    name: string,
+    export const apiGroupRetrieve = (
+    slug: string,
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {
       
       
       return customInstance<Group>(
-      {url: `/api/group/${name}`, method: 'GET', signal
+      {url: `/api/group/${slug}`, method: 'GET', signal
     },
       options);
     }
   
 
-export const getApiGroupRetrieveQueryKey = (name: string,) => {
-    return [`/api/group/${name}`] as const;
+export const getApiGroupRetrieveQueryKey = (slug: string,) => {
+    return [`/api/group/${slug}`] as const;
     }
 
     
-export const getApiGroupRetrieveQueryOptions = <TData = Awaited<ReturnType<typeof apiGroupRetrieve>>, TError = ErrorType<unknown>>(name: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupRetrieve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+export const getApiGroupRetrieveQueryOptions = <TData = Awaited<ReturnType<typeof apiGroupRetrieve>>, TError = ErrorType<unknown>>(slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupRetrieve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getApiGroupRetrieveQueryKey(name);
+  const queryKey =  queryOptions?.queryKey ?? getApiGroupRetrieveQueryKey(slug);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiGroupRetrieve>>> = ({ signal }) => apiGroupRetrieve(name, requestOptions, signal);
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiGroupRetrieve>>> = ({ signal }) => apiGroupRetrieve(slug, requestOptions, signal);
 
       
 
       
 
-   return  { queryKey, queryFn, enabled: !!(name), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiGroupRetrieve>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: !!(slug), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiGroupRetrieve>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
 export type ApiGroupRetrieveQueryResult = NonNullable<Awaited<ReturnType<typeof apiGroupRetrieve>>>
@@ -658,7 +437,7 @@ export type ApiGroupRetrieveQueryError = ErrorType<unknown>
 
 
 export function useApiGroupRetrieve<TData = Awaited<ReturnType<typeof apiGroupRetrieve>>, TError = ErrorType<unknown>>(
- name: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupRetrieve>>, TError, TData>> & Pick<
+ slug: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupRetrieve>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof apiGroupRetrieve>>,
           TError,
@@ -668,7 +447,7 @@ export function useApiGroupRetrieve<TData = Awaited<ReturnType<typeof apiGroupRe
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useApiGroupRetrieve<TData = Awaited<ReturnType<typeof apiGroupRetrieve>>, TError = ErrorType<unknown>>(
- name: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupRetrieve>>, TError, TData>> & Pick<
+ slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupRetrieve>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof apiGroupRetrieve>>,
           TError,
@@ -678,16 +457,16 @@ export function useApiGroupRetrieve<TData = Awaited<ReturnType<typeof apiGroupRe
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useApiGroupRetrieve<TData = Awaited<ReturnType<typeof apiGroupRetrieve>>, TError = ErrorType<unknown>>(
- name: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupRetrieve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupRetrieve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
 export function useApiGroupRetrieve<TData = Awaited<ReturnType<typeof apiGroupRetrieve>>, TError = ErrorType<unknown>>(
- name: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupRetrieve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupRetrieve>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getApiGroupRetrieveQueryOptions(name,options)
+  const queryOptions = getApiGroupRetrieveQueryOptions(slug,options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -699,13 +478,13 @@ export function useApiGroupRetrieve<TData = Awaited<ReturnType<typeof apiGroupRe
 
 
 export const apiGroupUpdate = (
-    name: string,
+    slug: string,
     group: BodyType<NonReadonly<Group>>,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
       return customInstance<Group>(
-      {url: `/api/group/${name}`, method: 'PUT',
+      {url: `/api/group/${slug}`, method: 'PUT',
       headers: {'Content-Type': 'application/json', },
       data: group
     },
@@ -715,8 +494,8 @@ export const apiGroupUpdate = (
 
 
 export const getApiGroupUpdateMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiGroupUpdate>>, TError,{name: string;data: BodyType<NonReadonly<Group>>}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof apiGroupUpdate>>, TError,{name: string;data: BodyType<NonReadonly<Group>>}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiGroupUpdate>>, TError,{slug: string;data: BodyType<NonReadonly<Group>>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof apiGroupUpdate>>, TError,{slug: string;data: BodyType<NonReadonly<Group>>}, TContext> => {
 
 const mutationKey = ['apiGroupUpdate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -728,10 +507,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiGroupUpdate>>, {name: string;data: BodyType<NonReadonly<Group>>}> = (props) => {
-          const {name,data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiGroupUpdate>>, {slug: string;data: BodyType<NonReadonly<Group>>}> = (props) => {
+          const {slug,data} = props ?? {};
 
-          return  apiGroupUpdate(name,data,requestOptions)
+          return  apiGroupUpdate(slug,data,requestOptions)
         }
 
         
@@ -744,11 +523,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type ApiGroupUpdateMutationError = ErrorType<unknown>
 
     export const useApiGroupUpdate = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiGroupUpdate>>, TError,{name: string;data: BodyType<NonReadonly<Group>>}, TContext>, request?: SecondParameter<typeof customInstance>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiGroupUpdate>>, TError,{slug: string;data: BodyType<NonReadonly<Group>>}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof apiGroupUpdate>>,
         TError,
-        {name: string;data: BodyType<NonReadonly<Group>>},
+        {slug: string;data: BodyType<NonReadonly<Group>>},
         TContext
       > => {
 
@@ -757,12 +536,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(mutationOptions , queryClient);
     }
     export const apiGroupDestroy = (
-    name: string,
+    slug: string,
  options?: SecondParameter<typeof customInstance>,) => {
       
       
       return customInstance<void>(
-      {url: `/api/group/${name}`, method: 'DELETE'
+      {url: `/api/group/${slug}`, method: 'DELETE'
     },
       options);
     }
@@ -770,8 +549,8 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 export const getApiGroupDestroyMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiGroupDestroy>>, TError,{name: string}, TContext>, request?: SecondParameter<typeof customInstance>}
-): UseMutationOptions<Awaited<ReturnType<typeof apiGroupDestroy>>, TError,{name: string}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiGroupDestroy>>, TError,{slug: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof apiGroupDestroy>>, TError,{slug: string}, TContext> => {
 
 const mutationKey = ['apiGroupDestroy'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -783,10 +562,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiGroupDestroy>>, {name: string}> = (props) => {
-          const {name} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiGroupDestroy>>, {slug: string}> = (props) => {
+          const {slug} = props ?? {};
 
-          return  apiGroupDestroy(name,requestOptions)
+          return  apiGroupDestroy(slug,requestOptions)
         }
 
         
@@ -799,11 +578,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type ApiGroupDestroyMutationError = ErrorType<unknown>
 
     export const useApiGroupDestroy = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiGroupDestroy>>, TError,{name: string}, TContext>, request?: SecondParameter<typeof customInstance>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiGroupDestroy>>, TError,{slug: string}, TContext>, request?: SecondParameter<typeof customInstance>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof apiGroupDestroy>>,
         TError,
-        {name: string},
+        {slug: string},
         TContext
       > => {
 
@@ -811,7 +590,228 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
       return useMutation(mutationOptions , queryClient);
     }
-    export const apiGroupsList = (
+    export const apiGroupCategoriesList = (
+    slug: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<Category[]>(
+      {url: `/api/group/${slug}/categories`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getApiGroupCategoriesListQueryKey = (slug: string,) => {
+    return [`/api/group/${slug}/categories`] as const;
+    }
+
+    
+export const getApiGroupCategoriesListQueryOptions = <TData = Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError = ErrorType<unknown>>(slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getApiGroupCategoriesListQueryKey(slug);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiGroupCategoriesList>>> = ({ signal }) => apiGroupCategoriesList(slug, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(slug), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ApiGroupCategoriesListQueryResult = NonNullable<Awaited<ReturnType<typeof apiGroupCategoriesList>>>
+export type ApiGroupCategoriesListQueryError = ErrorType<unknown>
+
+
+export function useApiGroupCategoriesList<TData = Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError = ErrorType<unknown>>(
+ slug: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof apiGroupCategoriesList>>,
+          TError,
+          Awaited<ReturnType<typeof apiGroupCategoriesList>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useApiGroupCategoriesList<TData = Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError = ErrorType<unknown>>(
+ slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof apiGroupCategoriesList>>,
+          TError,
+          Awaited<ReturnType<typeof apiGroupCategoriesList>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useApiGroupCategoriesList<TData = Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError = ErrorType<unknown>>(
+ slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useApiGroupCategoriesList<TData = Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError = ErrorType<unknown>>(
+ slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupCategoriesList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getApiGroupCategoriesListQueryOptions(slug,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const apiGroupCategoriesCreate = (
+    slug: string,
+    category: BodyType<NonReadonly<Category>>,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<Category[]>(
+      {url: `/api/group/${slug}/categories`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: category, signal
+    },
+      options);
+    }
+  
+
+
+export const getApiGroupCategoriesCreateMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiGroupCategoriesCreate>>, TError,{slug: string;data: BodyType<NonReadonly<Category>>}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof apiGroupCategoriesCreate>>, TError,{slug: string;data: BodyType<NonReadonly<Category>>}, TContext> => {
+
+const mutationKey = ['apiGroupCategoriesCreate'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof apiGroupCategoriesCreate>>, {slug: string;data: BodyType<NonReadonly<Category>>}> = (props) => {
+          const {slug,data} = props ?? {};
+
+          return  apiGroupCategoriesCreate(slug,data,requestOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ApiGroupCategoriesCreateMutationResult = NonNullable<Awaited<ReturnType<typeof apiGroupCategoriesCreate>>>
+    export type ApiGroupCategoriesCreateMutationBody = BodyType<NonReadonly<Category>>
+    export type ApiGroupCategoriesCreateMutationError = ErrorType<unknown>
+
+    export const useApiGroupCategoriesCreate = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof apiGroupCategoriesCreate>>, TError,{slug: string;data: BodyType<NonReadonly<Category>>}, TContext>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof apiGroupCategoriesCreate>>,
+        TError,
+        {slug: string;data: BodyType<NonReadonly<Category>>},
+        TContext
+      > => {
+
+      const mutationOptions = getApiGroupCategoriesCreateMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    export const apiGroupUsersList = (
+    slug: string,
+ options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<User[]>(
+      {url: `/api/group/${slug}/users`, method: 'GET', signal
+    },
+      options);
+    }
+  
+
+export const getApiGroupUsersListQueryKey = (slug: string,) => {
+    return [`/api/group/${slug}/users`] as const;
+    }
+
+    
+export const getApiGroupUsersListQueryOptions = <TData = Awaited<ReturnType<typeof apiGroupUsersList>>, TError = ErrorType<unknown>>(slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupUsersList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getApiGroupUsersListQueryKey(slug);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof apiGroupUsersList>>> = ({ signal }) => apiGroupUsersList(slug, requestOptions, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(slug), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof apiGroupUsersList>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ApiGroupUsersListQueryResult = NonNullable<Awaited<ReturnType<typeof apiGroupUsersList>>>
+export type ApiGroupUsersListQueryError = ErrorType<unknown>
+
+
+export function useApiGroupUsersList<TData = Awaited<ReturnType<typeof apiGroupUsersList>>, TError = ErrorType<unknown>>(
+ slug: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupUsersList>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof apiGroupUsersList>>,
+          TError,
+          Awaited<ReturnType<typeof apiGroupUsersList>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useApiGroupUsersList<TData = Awaited<ReturnType<typeof apiGroupUsersList>>, TError = ErrorType<unknown>>(
+ slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupUsersList>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof apiGroupUsersList>>,
+          TError,
+          Awaited<ReturnType<typeof apiGroupUsersList>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useApiGroupUsersList<TData = Awaited<ReturnType<typeof apiGroupUsersList>>, TError = ErrorType<unknown>>(
+ slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupUsersList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useApiGroupUsersList<TData = Awaited<ReturnType<typeof apiGroupUsersList>>, TError = ErrorType<unknown>>(
+ slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof apiGroupUsersList>>, TError, TData>>, request?: SecondParameter<typeof customInstance>}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getApiGroupUsersListQueryOptions(slug,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+export const apiGroupsList = (
     
  options?: SecondParameter<typeof customInstance>,signal?: AbortSignal
 ) => {

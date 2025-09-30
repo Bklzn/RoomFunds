@@ -98,7 +98,7 @@ const FetchedData: React.FC<{
 }> = ({ onFetch, page, rowsPerPage }) => {
   const { selectedGroup } = useGroup();
   const expenses = useApiExpensesList(
-    { groupName: selectedGroup },
+    { slug: selectedGroup },
     {
       query: {
         queryKey: ["expenses", selectedGroup],

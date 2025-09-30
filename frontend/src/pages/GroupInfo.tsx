@@ -21,7 +21,7 @@ import DateFormat from "../components/DateFormat";
 
 const GroupInfo: React.FC = () => {
   const { groups, selectedGroup } = useGroup();
-  const group = groups.filter((g) => g.name === selectedGroup)[0];
+  const group = groups.filter((g) => g.slug === selectedGroup)[0];
   return (
     <Box
       sx={{
@@ -112,7 +112,7 @@ const GroupInfo: React.FC = () => {
 const FetchedData: React.FC = () => {
   const { users, groups, selectedGroup } = useGroup();
   const userCount = users.length;
-  const group = groups.filter((g) => g.name === selectedGroup)[0];
+  const group = groups.filter((g) => g.slug === selectedGroup)[0];
   const totalAmount = Number(group.total_amount);
 
   return users.map((user, idx) => {

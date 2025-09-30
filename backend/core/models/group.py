@@ -1,8 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
+import uuid
 
 class Group(models.Model):
     name = models.CharField(max_length=100)
+    slug = models.UUIDField(editable=False, default=uuid.uuid4, unique=True, null=False)
     description = models.TextField(blank=True)
     members = models.ManyToManyField(User, related_name="expense_groups", through='GroupMembership', blank=True)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='owned_groups')

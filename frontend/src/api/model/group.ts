@@ -7,6 +7,7 @@
 export interface Group {
   /** @maxLength 100 */
   name: string;
+  readonly slug: string;
   description?: string;
   readonly owner: string;
   readonly moderators: readonly string[];

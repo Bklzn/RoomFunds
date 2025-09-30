@@ -10,8 +10,8 @@ class GroupSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Group
-        fields = ['name', 'description', 'owner', 'moderators', 'members', 'total_amount']
-        read_only_fields = ['id']
+        fields = ['name', 'slug', 'description', 'owner', 'moderators', 'members', 'total_amount']
+        read_only_fields = ['id', 'slug']
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -30,7 +30,7 @@ class GroupSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         validated_data['owner'] = user
         group = Group.objects.create(**validated_data)
-        group.members.add(user)
+        GroupMembership.objects.create(user=user, group=group, role=GroupMembership.ROLE_OWNER)
         return group
     
     def get_owner_id(self, obj):

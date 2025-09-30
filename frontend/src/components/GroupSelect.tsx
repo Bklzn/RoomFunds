@@ -8,10 +8,7 @@ import {
   PaperProps,
   Select,
   SelectChangeEvent,
-  Skeleton,
-  Typography,
 } from "@mui/material";
-import { useApiGroupsList } from "../api/api/api";
 import { useGroup } from "../context/GroupContext";
 import CreateGroupModal from "./CreateGroupModal";
 
@@ -63,8 +60,7 @@ const LoadingGroupSelect: React.FC = (props: PaperProps) => {
 };
 
 const SuccessGroupSelect: React.FC = (props: PaperProps) => {
-  const groups = useApiGroupsList({ query: { queryKey: ["groups"] } });
-  const { selectedGroup, setGroup } = useGroup();
+  const { selectedGroup, setGroup, groups } = useGroup();
   const { sx, ...rest } = props;
   return (
     <Paper
@@ -78,31 +74,24 @@ const SuccessGroupSelect: React.FC = (props: PaperProps) => {
     >
       <FormControl fullWidth>
         <InputLabel id="demo-simple-select-label">Your Groups</InputLabel>
-        {groups.isLoading ? (
-          <Skeleton animation="wave" sx={{ height: 50 }} />
-        ) : groups.isError ? (
-          <Typography>{groups.error.message}</Typography>
-        ) : (
-          <Box sx={{ display: "flex" }}>
-            <Select
-              value={selectedGroup}
-              defaultValue={selectedGroup}
-              label="Your Groups"
-              error={groups.isError}
-              onChange={(e: SelectChangeEvent) => setGroup(e.target.value)}
-              sx={{
-                width: "100%",
-              }}
-            >
-              {groups.data!.map((g, idx) => (
-                <MenuItem key={g.name + idx} value={g.name}>
-                  {g.name}
-                </MenuItem>
-              ))}
-            </Select>
-            <CreateGroupModal />
-          </Box>
-        )}
+        <Box sx={{ display: "flex" }}>
+          <Select
+            value={selectedGroup}
+            defaultValue={selectedGroup}
+            label="Your Groups"
+            onChange={(e: SelectChangeEvent) => setGroup(e.target.value)}
+            sx={{
+              width: "100%",
+            }}
+          >
+            {groups.map((g) => (
+              <MenuItem key={g.slug} value={g.slug}>
+                {g.name}
+              </MenuItem>
+            ))}
+          </Select>
+          <CreateGroupModal />
+        </Box>
       </FormControl>
     </Paper>
   );

@@ -97,7 +97,7 @@ const ExpenseAddForm: React.FC<BoxProps> = (props) => {
         data: {
           ...data,
           description: isDescShowed ? data.description : "",
-          group: selectedGroup,
+          group: selectedGroup, // api take this as slug
         },
       })
       .then(
@@ -244,7 +244,7 @@ const CategoryAddModal: React.FC<{
   const handleSaveCategory = async () => {
     await saveCategory
       .mutateAsync({
-        groupName: selectedGroup,
+        slug: selectedGroup,
         data: {
           name: categoryName,
         },

@@ -15,14 +15,14 @@ class CategoriesView(GenericAPIView):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
     
-    def get(self, request, group_name):
-        group = get_object_or_404(Group, name=group_name, members=request.user)
+    def get(self, request, slug):
+        group = get_object_or_404(Group, slug=slug, members=request.user)
         categories = self.get_queryset().filter(group=group)
         serializer = self.get_serializer(categories, many=True)
         return Response(serializer.data)
     
-    def post(self, request, group_name):
-        group = get_object_or_404(Group, name=group_name, members=request.user)
+    def post(self, request, slug):
+        group = get_object_or_404(Group, slug=slug, members=request.user)
         serializer = self.get_serializer(data=request.data, context={'request': request, 'group': group})
         if serializer.is_valid():
             serializer.save()

@@ -1,13 +1,16 @@
 from django.contrib import admin
 from .models import Expense, Group, Category
 
-admin.site.register(Category)
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'group')
+    search_fields = ('name', 'group__name')
 
 
 @admin.register(Group)
 class GroupAdmin(admin.ModelAdmin):
-    list_display = ('name', 'owner')
-    search_fields = ('name', )
+    list_display = ('slug', 'name', 'owner')
+    search_fields = ('name', 'slug')
     
 @admin.register(Expense)
 class ExpenseAdmin(admin.ModelAdmin):

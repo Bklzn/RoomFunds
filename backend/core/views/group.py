@@ -37,8 +37,8 @@ class GroupView(GenericAPIView):
     serializer_class = GroupSerializer
     queryset = Group.objects.all()
     
-    def get_object(self, name):
-        group = get_object_or_404(Group, name=name)
+    def get_object(self, slug):
+        group = get_object_or_404(Group, slug=slug)
 
         user = self.request.user
         if user in group.members.all():
@@ -47,13 +47,13 @@ class GroupView(GenericAPIView):
             raise Http404    
 
     
-    def get(self, request, name):
-        group = self.get_object(name=name)
+    def get(self, request, slug):
+        group = self.get_object(slug=slug)
         serializer = self.get_serializer(group)
         return Response(serializer.data)
     
-    def put(self, request, name):
-        group = self.get_queryset().filter(members=request.user).get(name=name)
+    def put(self, request, slug):
+        group = self.get_queryset().filter(members=request.user).get(slug=slug)
         if group.owner != request.user and not group.moderators.filter(id=request.user.id).exists():
             return Response({'error': 'You do not have permission to do this.'}, status=403)
         
@@ -79,8 +79,8 @@ class GroupMemberView(GenericAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
     
-    def get(self, request, group_name):
-        group = get_object_or_404(Group, name=group_name, members=request.user)
+    def get(self, request, slug):
+        group = get_object_or_404(Group, slug=slug, members=request.user)
         users = group.members.all()
         serializer = self.get_serializer(users, many=True, context={"group": group})
         return Response(serializer.data)
