@@ -41,9 +41,6 @@ class ExpensesView(GenericAPIView):
         return Response(serializer.data)
     
     def post(self, request):
-        slugGroup = request.data['group']
-        group = get_object_or_404(Group, slug=slugGroup, members=request.user)
-        request.data['group'] = group
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

@@ -1,7 +1,7 @@
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
 from core.serializers import GroupSerializer
-from core.models import Group
+from core.models import Group, GroupMembership
 from user_auth.serializers import UserSerializer
 from rest_framework.test import APIRequestFactory
 
@@ -13,7 +13,7 @@ class GroupSerializerTest(APITestCase):
         self.member = User.objects.create_user(username='member', password='password123')
         self.group = Group.objects.create(name='Test Group', description='Test Description', owner=self.user)
         self.group.members.add(self.user)
-        self.group.moderators.add(self.moderator)
+        GroupMembership.objects.create(user=self.moderator, group=self.group, role=GroupMembership.ROLE_MODERATOR)
         self.group.members.add(self.member)
         self.requestGET = self.factory.get('/')
         self.requestPOST = self.factory.post('/')

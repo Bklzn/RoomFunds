@@ -8,7 +8,7 @@ class ExpenseSerializer(serializers.ModelSerializer):
     category_input = serializers.CharField(write_only=True, required=False)
     user = serializers.SerializerMethodField()
     amount = serializers.DecimalField(max_digits=10, decimal_places=2, min_value=Decimal('0.01'))
-    group = serializers.SlugRelatedField(slug_field='name', queryset=Group.objects.none())
+    group = serializers.SlugRelatedField(slug_field='slug', queryset=Group.objects.none())
     
     class Meta:
         model = Expense

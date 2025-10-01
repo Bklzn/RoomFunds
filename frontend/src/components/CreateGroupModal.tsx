@@ -50,11 +50,11 @@ const CreateGroupModal: React.FC<{
     setIsLoad(true);
     const { name, description } = getValues();
     await apiGroupsCreate({ name, description }).then(
-      () => {
+      (r) => {
         queryClient
           .invalidateQueries({ queryKey: ["groups"] })
           .then(() => {
-            setGroup(name);
+            setGroup(r.slug);
             setOpen(false);
             setIsLoad(false);
           })

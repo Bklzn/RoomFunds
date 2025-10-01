@@ -24,7 +24,7 @@ class TestExpenseSerializer(APITestCase):
         self.request = self.factory.get('/')
         self.request.user = self.user
         self.valid_data = {
-            'group': 'Test Group',
+            'group': self.group.slug,
             'amount': '50.00',
             'category_input': 'Test Category',
             'description': 'Dinner',

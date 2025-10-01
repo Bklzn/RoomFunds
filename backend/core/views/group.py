@@ -22,6 +22,7 @@ class GroupsView(GenericAPIView):
         serializer = self.get_serializer(groups, many=True)
         return Response(serializer.data)
     
+    @extend_schema(responses=GroupSerializer)
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
@@ -54,7 +55,7 @@ class GroupView(GenericAPIView):
     
     def put(self, request, slug):
         group = self.get_queryset().filter(members=request.user).get(slug=slug)
-        if group.owner != request.user and not group.moderators.filter(id=request.user.id).exists():
+        if group.owner != request.user and not group.get_moderators().filter(user=request.user).exists():
             return Response({'error': 'You do not have permission to do this.'}, status=403)
         
         serializer = self.get_serializer(group, data=request.data)

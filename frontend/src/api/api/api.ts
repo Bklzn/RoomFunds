@@ -898,7 +898,7 @@ export const apiGroupsCreate = (
 ) => {
       
       
-      return customInstance<Group[]>(
+      return customInstance<Group>(
       {url: `/api/groups`, method: 'POST',
       headers: {'Content-Type': 'application/json', },
       data: group, signal

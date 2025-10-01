@@ -1,8 +1,9 @@
 from rest_framework.test import APITestCase, APIRequestFactory
 from django.contrib.auth.models import User
-from core.models import Group
+from core.models import Group, GroupMembership
 from core.views.group import GroupsView, GroupView
 from rest_framework.test import force_authenticate
+import uuid
 
 class TestGroupsView(APITestCase):
     def setUp(self):
@@ -57,15 +58,15 @@ class TestGroupView(APITestCase):
             description='Test Description',
             owner=self.user
         )
-        self.group.moderators.add(self.moderator)
+        GroupMembership.objects.create(user=self.moderator, group=self.group, role=GroupMembership.ROLE_MODERATOR)
         self.group.members.add(self.user, self.moderator, self.member)
         self.view = GroupView.as_view()
         self.groupLink = '/api/group'
 
     def test_get_single_group(self):
-        request = self.factory.get(f'{self.groupLink}/{self.group.name}')
+        request = self.factory.get(f'{self.groupLink}/{self.group.slug}')
         force_authenticate(request, user=self.user)
-        response = self.view(request, name=self.group.name)
+        response = self.view(request, slug=self.group.slug)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['name'], 'Test Group')
 
@@ -74,9 +75,9 @@ class TestGroupView(APITestCase):
             'name': 'Updated Group',
             'description': 'Updated Description',
         }
-        request = self.factory.put(f'{self.groupLink}/{self.group.name}', data)
+        request = self.factory.put(f'{self.groupLink}/{self.group.slug}', data)
         force_authenticate(request, user=self.user)
-        response = self.view(request, name=self.group.name)
+        response = self.view(request, slug=self.group.slug)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['name'], 'Updated Group')
         
@@ -85,9 +86,9 @@ class TestGroupView(APITestCase):
             'name': 'Updated Group',
             'description': 'Updated Description',
         }
-        request = self.factory.put(f'{self.groupLink}/{self.group.name}', data)
+        request = self.factory.put(f'{self.groupLink}/{self.group.slug}', data)
         force_authenticate(request, user=self.moderator)
-        response = self.view(request, name=self.group.name)
+        response = self.view(request, slug=self.group.slug)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['name'], 'Updated Group')
         
@@ -96,9 +97,9 @@ class TestGroupView(APITestCase):
             'name': 'Updated Group',
             'description': 'Updated Description',
         }
-        request = self.factory.put(f'{self.groupLink}/{self.group.name}', data)
+        request = self.factory.put(f'{self.groupLink}/{self.group.slug}', data)
         force_authenticate(request, user=self.member)
-        response = self.view(request, name=self.group.name)
+        response = self.view(request, slug=self.group.slug)
         self.assertEqual(response.status_code, 403)
         self.assertIn('error', response.data)
 
@@ -124,14 +125,15 @@ class TestGroupView(APITestCase):
         self.assertTrue(Group.objects.filter(pk=self.group.pk).exists())
 
     def test_get_nonexistent_group(self):
-        request = self.factory.get(f'{self.groupLink}/nonexistent')
+        slug = uuid.uuid4()
+        request = self.factory.get(f'{self.groupLink}/{slug}')
         force_authenticate(request, user=self.user)
-        response = self.view(request, name='nonexistent')
+        response = self.view(request, slug=slug)
         self.assertEqual(response.status_code, 404)
 
     def test_unauthorized_access(self):
         other_user = User.objects.create_user(username='other', password='testpass123')
-        request = self.factory.get(f'{self.groupLink}/{self.group.name}')
+        request = self.factory.get(f'{self.groupLink}/{self.group.slug}')
         force_authenticate(request, user=other_user)
-        response = self.view(request, name=self.group.name)
+        response = self.view(request, slug=self.group.slug)
         self.assertEqual(response.status_code, 404)

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from core.models import Group, Category
 from core.views.category import CategoriesView
 from rest_framework import status
+import uuid
 
 class CategoryViewTest(APITestCase):
     def setUp(self):
@@ -16,24 +17,24 @@ class CategoryViewTest(APITestCase):
         self.view = CategoriesView.as_view()
 
     def test_get_categories_success(self):
-        request = self.factory.get(self.url(self.group.name))
+        request = self.factory.get(self.url(self.group.slug))
         force_authenticate(request, user=self.user)
-        response = self.view(request, group_name=self.group.name)
+        response = self.view(request, slug=self.group.slug)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['name'], 'Test Category')
 
     def test_get_categories_unauthorized_user(self):
-        request = self.factory.get(self.url(self.group.name))
+        request = self.factory.get(self.url(self.group.slug))
         force_authenticate(request, user=self.other_user)
-        response = self.view(request, group_name=self.group.name)
+        response = self.view(request, slug=self.group.slug)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_get_categories_nonexistent_group(self):
-        group_name = 'NonexistentGroup'
-        request = self.factory.get(self.url(group_name))
+        group_slug = str(uuid.uuid4())
+        request = self.factory.get(self.url(group_slug))
         force_authenticate(request, user=self.user)
-        response = self.view(request, group_name=group_name)
+        response = self.view(request, slug=group_slug)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_create_category_success(self):
@@ -41,9 +42,9 @@ class CategoryViewTest(APITestCase):
             'name': 'New Category',
             'description': 'New Description'
         }
-        request = self.factory.post(self.url(self.group.name), data, format='json')
+        request = self.factory.post(self.url(self.group.slug), data, format='json')
         force_authenticate(request, user=self.user)
-        response = self.view(request, group_name=self.group.name)
+        response = self.view(request, slug=self.group.slug)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['name'], 'New Category')
         self.assertEqual(Category.objects.count(), 2)
@@ -52,7 +53,7 @@ class CategoryViewTest(APITestCase):
         data = {
             'description': 'New Description'
         }
-        request = self.factory.post(self.url(self.group.name), data, format='json')
+        request = self.factory.post(self.url(self.group.slug), data, format='json')
         force_authenticate(request, user=self.user)
-        response = self.view(request, group_name=self.group.name)
+        response = self.view(request, slug=self.group.slug)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
