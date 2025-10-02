@@ -20,7 +20,7 @@ export const AuthGroupsProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!groups.isSuccess || !groups.data.length) return;
     const storage = localStorage.getItem("selectedGroup");
 
-    if (!storage || !groups.data.some((g) => g.name === storage)) {
+    if (!storage || !groups.data.some((g) => g.slug === storage)) {
       setGroupManually(groups.data[0].slug);
     } else {
       setGroup(storage);
