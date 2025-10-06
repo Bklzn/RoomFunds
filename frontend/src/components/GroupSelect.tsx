@@ -13,10 +13,10 @@ import { useGroup } from "../context/GroupContext";
 import CreateGroupModal from "./CreateGroupModal";
 
 const GroupSelect: React.FC = (props: PaperProps) => {
-  const { state } = useGroup();
+  const { state, groups, selectedGroup } = useGroup();
 
-  if (state === "loading") return <LoadingGroupSelect {...props} />;
-  if (state === "error" || state === "empty")
+  if (state === "pending") return <LoadingGroupSelect {...props} />;
+  if (state === "error" || groups.length === 0 || !selectedGroup)
     return <NoGroupSelect {...props} />;
 
   return <SuccessGroupSelect {...props} />;

@@ -19,8 +19,8 @@ export const AuthGroupsProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (!groups.isSuccess || !groups.data.length) return;
     const storage = localStorage.getItem("selectedGroup");
-
-    if (!storage || !groups.data.some((g) => g.slug === storage)) {
+    const groupsExists = storage && groups.data.some((g) => g.slug === storage);
+    if (!groupsExists) {
       setGroupManually(groups.data[0].slug);
     } else {
       setGroup(storage);
@@ -29,7 +29,9 @@ export const AuthGroupsProvider: React.FC<{ children: React.ReactNode }> = ({
 
   if (groups.isError) {
     return (
-      <AuthGroupContext.Provider value={{ ...contextDefaults, state: "error" }}>
+      <AuthGroupContext.Provider
+        value={{ ...contextDefaults, state: groups.status }}
+      >
         {groups.error.message}
       </AuthGroupContext.Provider>
     );
@@ -37,7 +39,7 @@ export const AuthGroupsProvider: React.FC<{ children: React.ReactNode }> = ({
   if (groups.isLoading) {
     return (
       <AuthGroupContext.Provider
-        value={{ ...contextDefaults, state: "loading" }}
+        value={{ ...contextDefaults, state: groups.status }}
       >
         <CircularProgress
           color="inherit"
@@ -58,7 +60,7 @@ export const AuthGroupsProvider: React.FC<{ children: React.ReactNode }> = ({
         value={{
           ...contextDefaults,
           groups: groups.data,
-          state: "success",
+          state: groups.status,
           selectedGroup: group,
           setGroup: setGroupManually,
         }}

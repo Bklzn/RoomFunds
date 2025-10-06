@@ -9,11 +9,12 @@ import { useGroup } from "../context/GroupContext";
 import { useWhoamiRetrieve } from "../api/whoami/whoami";
 
 const UserBalance: React.FC = () => {
-  const { state } = useGroup();
+  const { state, groups, selectedGroup } = useGroup();
 
-  if (state === "loading") return <BalanceLoading />;
+  if (state === "pending") return <BalanceLoading />;
 
-  if (state === "error" || state === "empty") return <BalanceError />;
+  if (state === "error" || groups.length === 0 || !selectedGroup)
+    return <BalanceError />;
 
   return <BalanceSuccess />;
 };

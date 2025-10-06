@@ -26,7 +26,7 @@ const CreateGroupModal: React.FC<{
   btnProps?: IconButtonProps;
 }> = ({ boxProps, btnProps }) => {
   const theme = useTheme();
-  const { state, setGroup } = useGroup();
+  const { groups, setGroup } = useGroup();
   const [open, setOpen] = useState(false);
   const [isLoad, setIsLoad] = useState(false);
   const {
@@ -41,10 +41,10 @@ const CreateGroupModal: React.FC<{
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (state === "empty") {
+    if (!groups.length) {
       setTimeout(() => setOpen(true), 500);
     }
-  }, [state]);
+  }, [groups.length]);
 
   const onSubmit = async () => {
     setIsLoad(true);
@@ -87,7 +87,7 @@ const CreateGroupModal: React.FC<{
               height: "100%",
             }}
             {...btnProps}
-            disabled={state === "empty" ? false : btnProps?.disabled}
+            disabled={!groups.length ? false : btnProps?.disabled}
           >
             <Add sx={{ m: "auto" }} />
           </IconButton>

@@ -1,5 +1,7 @@
 import { SetStateAction } from "react";
 import { Category, Group, User } from "../api/model";
+import { ApiGroupRetrieveQueryResult } from "../api/api/api";
+import { UseQueryResult } from "@tanstack/react-query";
 
 export interface GroupContextProps {
   groups: Group[];
@@ -7,7 +9,7 @@ export interface GroupContextProps {
   setGroup: (value: SetStateAction<string>) => void;
   categories: Category[];
   users: User[];
-  state: "loading" | "success" | "error" | "empty";
+  state: UseQueryResult<ApiGroupRetrieveQueryResult>["status"];
 }
 
 export const contextDefaults: GroupContextProps = {
@@ -16,5 +18,5 @@ export const contextDefaults: GroupContextProps = {
   setGroup: () => {},
   categories: [],
   users: [],
-  state: "loading",
+  state: "pending",
 };

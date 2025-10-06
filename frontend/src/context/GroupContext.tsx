@@ -15,14 +15,14 @@ const GroupContext = createContext<GroupContextProps>(contextDefaults);
 export const GroupProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const { selectedGroup, ...rest } = useContext(AuthGroupContext);
+  const { groups, ...rest } = useContext(AuthGroupContext);
 
-  return selectedGroup ? (
-    <SelectedGroupProvider contextProps={{ selectedGroup, ...rest }}>
+  return groups.length ? (
+    <SelectedGroupProvider contextProps={{ groups, ...rest }}>
       {children}
     </SelectedGroupProvider>
   ) : (
-    <NoGroupProvider contextProps={{ selectedGroup, ...rest }} />
+    <NoGroupProvider contextProps={{ groups, ...rest }} />
   );
 };
 
@@ -30,7 +30,8 @@ const NoGroupProvider: React.FC<{ contextProps: GroupContextProps }> = ({
   contextProps,
 }) => {
   return (
-    <GroupContext.Provider value={contextProps}>
+    <GroupContext.Provider value={{ ...contextProps }}>
+      <GroupBasics />
       <NoGroupsHandler />
     </GroupContext.Provider>
   );
@@ -71,7 +72,6 @@ const SelectedGroupProvider: React.FC<{
         value={{
           ...rest,
           selectedGroup,
-          state: "success",
         }}
       >
         <GroupBasics />
@@ -87,7 +87,6 @@ const SelectedGroupProvider: React.FC<{
         value={{
           ...rest,
           selectedGroup,
-          state: "success",
         }}
       >
         <GroupBasics />
@@ -112,7 +111,6 @@ const SelectedGroupProvider: React.FC<{
         selectedGroup,
         categories,
         users,
-        state: "success",
       }}
     >
       <GroupBasics />
