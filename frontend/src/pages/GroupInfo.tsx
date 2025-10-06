@@ -18,6 +18,11 @@ import User from "../components/User";
 import { Group } from "../api/model";
 import { AddModerator, Delete, Edit } from "@mui/icons-material";
 import DateFormat from "../components/DateFormat";
+import DeleteModal from "../components/DeleteModal";
+import { useState } from "react";
+import { useApiGroupDestroy } from "../api/api/api";
+import { AxiosError } from "axios";
+import { useHandleLocalGroupDeletation } from "../hooks/hooks";
 
 const GroupInfo: React.FC = () => {
   const { groups, selectedGroup } = useGroup();
@@ -32,9 +37,6 @@ const GroupInfo: React.FC = () => {
       <Typography variant="h5" sx={{ m: 1, mt: 2 }}>
         Group
       </Typography>
-      {/* <Typography variant="body1" sx={{ m: 2, mt: 2, mb: 0.5 }}>
-        General info
-      </Typography> */}
       <Paper
         elevation={1}
         sx={{
@@ -65,21 +67,21 @@ const GroupInfo: React.FC = () => {
             )}
           </Box>
         </Box>
-        <Tooltip title="In development" arrow>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <Button variant="contained" startIcon={<Edit />} disabled>
-              Edit
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<Delete />}
-              disabled
-            >
-              Delete
-            </Button>
-          </Box>
-        </Tooltip>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <Tooltip title="In development" arrow>
+            <Box>
+              <Button
+                variant="contained"
+                startIcon={<Edit />}
+                fullWidth
+                disabled
+              >
+                Edit
+              </Button>
+            </Box>
+          </Tooltip>
+          <DeleteGroupModal />
+        </Box>
       </Paper>
       <Typography variant="body1" sx={{ m: 2, mt: 3, mb: 0.5 }}>
         Users
@@ -187,6 +189,81 @@ const UserOptions: React.FC = () => {
           </IconButton>
         </Box>
       </Tooltip>
+    </Box>
+  );
+};
+
+const DeleteGroupModal: React.FC = () => {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { selectedGroup, groups } = useGroup();
+  const groupName = groups.filter((g) => g.slug === selectedGroup)[0].name;
+  const groupDestroy = useApiGroupDestroy();
+  const { handleMutation } = useHandleLocalGroupDeletation();
+  const deleteGroup = async () => {
+    setLoading(true);
+    setError("");
+    await groupDestroy
+      .mutateAsync({
+        slug: selectedGroup,
+      })
+      .then(async () => {
+        await handleMutation();
+        setLoading(false);
+        setOpen(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        if (err instanceof AxiosError) {
+          if (err.response) setError(err.response.statusText);
+          else setError(err.message);
+        } else {
+          setError(err.response.data.message);
+        }
+        setLoading(false);
+      });
+  };
+  return (
+    <Box>
+      <Button
+        variant="outlined"
+        color="error"
+        startIcon={<Delete />}
+        onClick={() => setOpen(true)}
+      >
+        Delete
+      </Button>
+      <DeleteModal
+        open={open}
+        loading={loading}
+        error={error}
+        setOpen={setOpen}
+        onDisagree={() => setOpen(false)}
+        onAgree={deleteGroup}
+        title="Delete group"
+        description={
+          <Box color={"text.secondary"}>
+            <Typography sx={{ display: "inline" }}>
+              You are about to delete{" "}
+            </Typography>
+            <Typography
+              sx={{
+                fontWeight: "bold",
+                color: "text.primary",
+                display: "inline",
+              }}
+            >
+              {groupName}
+            </Typography>
+            <Typography sx={{ display: "inline" }}>
+              {" "}
+              group. This process cannot be undone. All data associated with
+              this group will be also deleted (expenses)
+            </Typography>
+          </Box>
+        }
+      />
     </Box>
   );
 };

@@ -9,6 +9,9 @@ from rest_framework.response import Response
 from core.models import Group
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
+import logging
+
+logger = logging.getLogger(__name__)
 
 @extend_schema(responses=GroupSerializer(many=True))
 class GroupsView(GenericAPIView):
@@ -65,8 +68,11 @@ class GroupView(GenericAPIView):
         else:
             return Response(serializer.errors, status=400)
         
-    def delete(self, request, pk):
-        group = self.get_queryset().filter(members=request.user).get(pk=pk)
+    def delete(self, request, slug):
+        try:
+            group = self.get_queryset().filter(members=request.user).get(slug=slug)
+        except Group.DoesNotExist:
+            return Response({'error': 'You do not have permission to do this.'}, status=403)
         if group.owner != request.user:
             return Response({'error': 'You do not have permission to do this.'}, status=403)
         

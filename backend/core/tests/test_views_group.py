@@ -104,25 +104,25 @@ class TestGroupView(APITestCase):
         self.assertIn('error', response.data)
 
     def test_delete_group_by_owner(self):
-        request = self.factory.delete(f'{self.groupLink}/{self.group.pk}')
+        request = self.factory.delete(f'{self.groupLink}/{self.group.slug}')
         force_authenticate(request, user=self.user)
-        response = self.view(request, pk=self.group.pk)
+        response = self.view(request, slug=self.group.slug)
         self.assertEqual(response.status_code, 204)
-        self.assertFalse(Group.objects.filter(pk=self.group.pk).exists())
+        self.assertFalse(Group.objects.filter(slug=self.group.slug).exists())
         
     def test_delete_group_by_moderator(self):
-        request = self.factory.delete(f'{self.groupLink}/{self.group.pk}')
+        request = self.factory.delete(f'{self.groupLink}/{self.group.slug}')
         force_authenticate(request, user=self.moderator)
-        response = self.view(request, pk=self.group.pk)
+        response = self.view(request, slug=self.group.slug)
         self.assertEqual(response.status_code, 403)
-        self.assertTrue(Group.objects.filter(pk=self.group.pk).exists())
+        self.assertTrue(Group.objects.filter(slug=self.group.slug).exists())
         
     def test_delete_group_by_member(self):
-        request = self.factory.delete(f'{self.groupLink}/{self.group.pk}')
+        request = self.factory.delete(f'{self.groupLink}/{self.group.slug}')
         force_authenticate(request, user=self.member)
-        response = self.view(request, pk=self.group.pk)
+        response = self.view(request, slug=self.group.slug)
         self.assertEqual(response.status_code, 403)
-        self.assertTrue(Group.objects.filter(pk=self.group.pk).exists())
+        self.assertTrue(Group.objects.filter(slug=self.group.slug).exists())
 
     def test_get_nonexistent_group(self):
         slug = uuid.uuid4()
