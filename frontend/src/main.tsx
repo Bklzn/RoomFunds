@@ -8,6 +8,7 @@ import { HashRouter, Route, Routes } from "react-router-dom";
 import { AuthGroupsProvider } from "./context/AuthGroupsContext.tsx";
 import AuthCodeExchange from "./pages/AuthCodeExchange.tsx";
 import LogoutRedirect from "./pages/LogoutRedirect.tsx";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const queryClient = new QueryClient();
 const darkTheme = createTheme({ palette: { mode: "dark" } });
@@ -32,6 +33,7 @@ createRoot(document.getElementById("root")!).render(
           </Routes>
         </HashRouter>
       </ThemeProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   </StrictMode>
 );
